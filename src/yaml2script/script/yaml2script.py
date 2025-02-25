@@ -38,7 +38,10 @@ shellcheck_.gitlab-ci.yml:
 
 import argparse
 import importlib
+import os
+import subprocess
 import sys
+import tempfile
 import warnings
 
 import yaml
@@ -52,6 +55,7 @@ def run_version(_):
     """
     version = importlib.metadata.version(__package__.split(".", maxsplit=1)[0])
     print(f'yaml2script version {version}')
+    return sys.exit(0)
 
 
 def extract_script(filename, jobname):
@@ -94,6 +98,48 @@ def run_extract_script(args):
     """
     script_code = extract_script(args.filename[0], args.jobname[0])
     print('\n'.join(script_code))
+    return sys.exit(0)
+
+
+def run_check_script(args):
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-02-25
+    :License: GPL-3.0
+    """
+    # args.filename[0]
+    # args.jobname
+    # args.check_command[0]
+    # args.parameter_check_command
+    commoncmd = args.check_command[0]
+    commoncmd += " " + ' '.join(args.parameter_check_command)
+    returncode = 0
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for jobname in args.jobname:
+            if args.verbose:
+                print('extract', jobname, 'from', args.filename[0])
+            script_code = '\n'.join(extract_script(args.filename[0], jobname))
+            scriptfilename = os.path.join(tmpdir, jobname)
+            with open(scriptfilename, 'w', encoding='utf8') as fd:
+                fd.write(script_code)
+            cmd = commoncmd + " " + scriptfilename
+            if args.verbose:
+                print('run', cmd)
+            cpi = subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                shell=True, cwd=tmpdir, check=False)
+            returncode += cpi.returncode
+            if not args.quiet:
+                if cpi.stdout.decode():
+                    print(cpi.stdout.decode())
+                if cpi.stderr.decode():
+                    print(cpi.stderr.decode())
+            if args.verbose:
+                print('returncode', cpi.returncode)
+    if args.verbose:
+        print('returncode sum', returncode)
+    return returncode
 
 
 def main():
@@ -105,14 +151,16 @@ def main():
     allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
     files.
     """
-    epilog = "Example:\n\n"
-    epilog += "yaml2script .gitlab-ci.yml pre-commit\n\n"
-    epilog += "Author: Daniel Mohr\n"
-    epilog += "yaml2script Version: "
-    epilog += importlib.metadata.version(
+    preepilog = "Examples:\n\n"
+    preepilog += "yaml2script extract .gitlab-ci.yml pre-commit\n\n"
+    preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle\n\n"
+    postepilog = "Author: Daniel Mohr\n"
+    postepilog += "yaml2script Version: "
+    postepilog += importlib.metadata.version(
         __package__.split('.', maxsplit=1)[0]) + "\n"
-    epilog += "License: GPL-3.0"
-    epilog += "\n\n"
+    postepilog += "License: GPL-3.0"
+    postepilog += "\n\n"
+    epilog = preepilog + postepilog
     parser = argparse.ArgumentParser(
         description='yaml2script extracts the scripts '
         'from a .gitlab-ci.yml file.',
@@ -149,6 +197,59 @@ def main():
         nargs=1,
         type=str,
         help='This jobname will be extracted.')
+    # subparser check scripts
+    preepilog = "Example:\n\n"
+    preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle\n\n"
+    epilog = preepilog + postepilog
+    parser_check_script = subparsers.add_parser(
+        'check',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        help='For more help: yaml2script check -h',
+        description='Check scripts from the specified ".gitlab-ci.yml" '
+        'file.',
+        epilog=epilog)
+    parser_check_script.set_defaults(func=run_check_script)
+    parser_check_script.add_argument(
+        'filename',
+        nargs=1,
+        type=str,
+        help='From this filename the script(s) will be extracted.')
+    parser_check_script.add_argument(
+        'jobname',
+        nargs="+",
+        type=str,
+        help='These jobname(s) will be extracted and checked.')
+    parser_check_script.add_argument(
+        '-check_command',
+        nargs=1,
+        type=str,
+        required=False,
+        default=["shellcheck"],
+        dest='check_command',
+        help='Use this tool to check script(s). default: shellcheck')
+    parser_check_script.add_argument(
+        '-parameter_check_command',
+        nargs="+",
+        type=str,
+        required=False,
+        default=["-e SC1091"],
+        dest='parameter_check_command',
+        help='Parameter for the check command. default: "-e SC1091"')
+    parser_check_script.add_argument(
+        '-quiet',
+        default=False,
+        required=False,
+        action='store_true',
+        dest='quiet',
+        help='No output from check command.')
+    parser_check_script.add_argument(
+        '-verbose',
+        default=False,
+        required=False,
+        action='store_true',
+        dest='verbose',
+        help='verbose output')
+    # parse arguments
     args = parser.parse_args()
     if args.subparser_name is not None:
         sys.exit(args.func(args))
