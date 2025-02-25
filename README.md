@@ -8,7 +8,7 @@ shellcheck_.gitlab-ci.yml:
   image:
     name: alpine:latest
   script:
-    - apk add --no-cache pipx
+    - apk add --no-cache pipx shellcheck
     - pipx install .
     - yaml2script all .gitlab-ci.yml
 ```
