@@ -1,0 +1,8 @@
+- id: yaml2script
+  name: yaml2script all
+  entry: yaml2script all
+  language: python
+  files: .gitlab-ci.yml
+  verbose: true
+  require_serial: true
+  description: yaml2script checks scripts from a '.gitlab-ci.yml' file

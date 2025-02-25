@@ -12,7 +12,7 @@ readme = "README.md"
 
 requires-python = ">=3.9"
 
-dependencies = ["shellcheck-py", "pyyaml"]
+dependencies = ["pyyaml"]
 
 [project.license]
 file = "LICENSE.md"
@@ -20,3 +20,8 @@ name = "GPL-3.0"
 
 [project.scripts]
 yaml2script = "yaml2script.script.yaml2script:main"
+
+[project.optional-dependencies]
+shellcheck = ["shellcheck-py"]
+pycodestyle = ["pycodestyle"]
+pylint = ["pylint"]

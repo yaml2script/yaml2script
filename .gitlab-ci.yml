@@ -59,8 +59,9 @@ alpine-latest-pipx:
   script:
     - apk add --no-cache pipx
     - export PATH="$PATH":~/.local/bin
-    - pipx install .
-    - yaml2script || echo "that's OK"
+    - pipx install .[shellcheck]
+    - yaml2script --help
+    - yaml2script all .gitlab-ci.yml
     - pipx uninstall yaml2script
 
 alpine-latest-pip:
@@ -69,7 +70,19 @@ alpine-latest-pip:
     name: alpine:latest
   extends: .display_env
   script:
+    - apk add --no-cache py3-pip
+    - pip3 install --break-system-packages .[shellcheck]
+    - yaml2script --help
+    - yaml2script all .gitlab-ci.yml
+
+alpine-latest-pip-system-packages:
+  stage: build_test
+  image:
+    name: alpine:latest
+  extends: .display_env
+  script:
     - apk add --no-cache py3-pip py3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
-    - yaml2script || echo "that's OK"
+    - yaml2script --help
+    - yaml2script all .gitlab-ci.yml
     - pip3 uninstall -y --break-system-packages yaml2script
