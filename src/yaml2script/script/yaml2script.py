@@ -100,6 +100,7 @@ def _run_check_script(
     :Date: 2025-02-25
     :License: GPL-3.0
     """
+    # pylint: disable=too-many-arguments
     commoncmd = check_command
     commoncmd += " " + ' '.join(parameter_check_command)
     returncode = 0
