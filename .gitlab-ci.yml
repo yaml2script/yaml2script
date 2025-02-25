@@ -73,4 +73,4 @@ alpine-latest-pip:
     - apk add --no-cache py3-pip py3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
     - yaml2script || echo "that's OK"
-    - pip3 uninstall yaml2script
+    - pip3 uninstall --break-system-packages yaml2script
