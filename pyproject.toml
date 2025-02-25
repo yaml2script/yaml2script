@@ -19,4 +19,4 @@ file = "LICENSE.md"
 name = "GPL-3.0"
 
 [project.scripts]
-yaml2script = "yaml2script:main"
+yaml2script = "yaml2script.script.yaml2script:main"
