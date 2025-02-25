@@ -11,7 +11,7 @@
 # example with 'shellcheck'.
 """
 This script extracts the scripts from a '.gitlab-ci.yml' file.
-This allows the scripts inside '.gitlab-ci.yml' to be tested/analyzed 
+This allows the scripts inside '.gitlab-ci.yml' to be tested/analyzed
 with tools like 'shellcheck'.
 
 You can use it in a CI pipline, e. g.:
@@ -28,7 +28,8 @@ shellcheck_.gitlab-ci.yml:
       grep -E "^([^ ]+):$" < .gitlab-ci.yml | sed 's/://' > "$JOBNAMES"
       while IFS= read -r jobname
       do
-        ./yaml2script.py .gitlab-ci.yml "$jobname" | tee "$CREATED_SCRIPTS/$jobname"
+        ./yaml2script.py .gitlab-ci.yml "$jobname" | \
+          tee "$CREATED_SCRIPTS/$jobname"
       done < "$JOBNAMES"
       rm "$JOBNAMES"
     - shellcheck -e SC1091 "$CREATED_SCRIPTS"/*
@@ -59,10 +60,10 @@ import yaml
 
 def main():
     """
-    Extracts scripts from the specified '.gitlab-ci.yml' file and 
+    Extracts scripts from the specified '.gitlab-ci.yml' file and
     prints them to stdout.
 
-    It correctly handles YAML anchors and GitLab CI's 'extends' functionality, 
+    It correctly handles YAML anchors and GitLab CI's 'extends' functionality,
     allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
     files.
     """
