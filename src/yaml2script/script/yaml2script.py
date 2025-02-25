@@ -23,22 +23,13 @@ shellcheck_.gitlab-ci.yml:
   script:
     - apk add --no-cache py3-pip py3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
-    - CREATED_SCRIPTS=$(mktemp -d)
-    - |
-      JOBNAMES="$(mktemp)"
-      grep -E "^([^ ]+):$" < .gitlab-ci.yml | sed 's/://' > "$JOBNAMES"
-      while IFS= read -r jobname
-      do
-        ./yaml2script extract .gitlab-ci.yml "$jobname" | \
-          tee "$CREATED_SCRIPTS/$jobname"
-      done < "$JOBNAMES"
-      rm "$JOBNAMES"
-    - shellcheck -e SC1091 "$CREATED_SCRIPTS"/*
+    - yaml2script all .gitlab-ci.yml
 """
 
 import argparse
 import importlib
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -101,45 +92,72 @@ def run_extract_script(args):
     return sys.exit(0)
 
 
-def run_check_script(args):
+def _run_check_script(
+        filename, all_jobnames, check_command, parameter_check_command, *,
+        verbose=False, quiet=False):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-25
     :License: GPL-3.0
     """
-    # args.filename[0]
-    # args.jobname
-    # args.check_command[0]
-    # args.parameter_check_command
-    commoncmd = args.check_command[0]
-    commoncmd += " " + ' '.join(args.parameter_check_command)
+    commoncmd = check_command
+    commoncmd += " " + ' '.join(parameter_check_command)
     returncode = 0
     with tempfile.TemporaryDirectory() as tmpdir:
-        for jobname in args.jobname:
-            if args.verbose:
-                print('extract', jobname, 'from', args.filename[0])
-            script_code = '\n'.join(extract_script(args.filename[0], jobname))
+        for jobname in all_jobnames:
+            if verbose:
+                print('extract', jobname, 'from', filename)
+            script_code = '\n'.join(extract_script(filename, jobname))
             scriptfilename = os.path.join(tmpdir, jobname)
             with open(scriptfilename, 'w', encoding='utf8') as fd:
                 fd.write(script_code)
             cmd = commoncmd + " " + scriptfilename
-            if args.verbose:
+            if verbose:
                 print('run', cmd)
             cpi = subprocess.run(
                 cmd,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True, cwd=tmpdir, check=False)
             returncode += cpi.returncode
-            if not args.quiet:
+            if not quiet:
                 if cpi.stdout.decode():
                     print(cpi.stdout.decode())
                 if cpi.stderr.decode():
                     print(cpi.stderr.decode())
-            if args.verbose:
+            if verbose:
                 print('returncode', cpi.returncode)
-    if args.verbose:
+    if verbose:
         print('returncode sum', returncode)
     return returncode
+
+
+def run_check_script(args):
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-02-25
+    :License: GPL-3.0
+    """
+    return _run_check_script(
+        args.filename[0], args.jobname, args.check_command[0],
+        args.parameter_check_command,
+        verbose=args.verbose, quiet=args.quiet)
+
+
+def run_check_all_scripts(args):
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-02-25
+    :License: GPL-3.0
+    """
+    with open(args.filename[0], encoding='utf8') as fd:
+        lines = fd.read()
+    jobnames = tuple(
+        map(str.strip,
+            re.findall(r'^([^ ]+):$', lines, re.MULTILINE)))
+    return _run_check_script(
+        args.filename[0], jobnames, args.check_command[0],
+        args.parameter_check_command,
+        verbose=args.verbose, quiet=args.quiet)
 
 
 def main():
@@ -234,6 +252,7 @@ def main():
         required=False,
         default=["-e SC1091"],
         dest='parameter_check_command',
+        metavar='param',
         help='Parameter for the check command. default: "-e SC1091"')
     parser_check_script.add_argument(
         '-quiet',
@@ -243,6 +262,54 @@ def main():
         dest='quiet',
         help='No output from check command.')
     parser_check_script.add_argument(
+        '-verbose',
+        default=False,
+        required=False,
+        action='store_true',
+        dest='verbose',
+        help='verbose output')
+    # subparser check all scripts
+    preepilog = "Example:\n\n"
+    preepilog += "yaml2script all .gitlab-ci.yml\n\n"
+    epilog = preepilog + postepilog
+    parser_check_all_scripts = subparsers.add_parser(
+        'all',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        help='For more help: yaml2script all -h',
+        description='Check all scripts from the specified ".gitlab-ci.yml" '
+        'file.',
+        epilog=epilog)
+    parser_check_all_scripts.set_defaults(func=run_check_all_scripts)
+    parser_check_all_scripts.add_argument(
+        'filename',
+        nargs=1,
+        type=str,
+        help='From this filename the script(s) will be extracted.')
+    parser_check_all_scripts.add_argument(
+        '-check_command',
+        nargs=1,
+        type=str,
+        required=False,
+        default=["shellcheck"],
+        dest='check_command',
+        help='Use this tool to check script(s). default: shellcheck')
+    parser_check_all_scripts.add_argument(
+        '-parameter_check_command',
+        nargs="+",
+        type=str,
+        required=False,
+        default=["-e SC1091"],
+        dest='parameter_check_command',
+        metavar='param',
+        help='Parameter for the check command. default: "-e SC1091"')
+    parser_check_all_scripts.add_argument(
+        '-quiet',
+        default=False,
+        required=False,
+        action='store_true',
+        dest='quiet',
+        help='No output from check command.')
+    parser_check_all_scripts.add_argument(
         '-verbose',
         default=False,
         required=False,
