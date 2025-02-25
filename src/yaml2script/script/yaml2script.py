@@ -43,6 +43,7 @@ import warnings
 
 import yaml
 
+
 def run_version(_):
     """
     :Author: Daniel Mohr
@@ -52,8 +53,13 @@ def run_version(_):
     version = importlib.metadata.version(__package__.split(".", maxsplit=1)[0])
     print(f'yaml2script version {version}')
 
+
 def extract_script(filename, jobname):
     """
+    :Author: Daniel Mohr
+    :Date: 2025-02-25
+    :License: GPL-3.0
+
     Extracts scripts from the specified filename and returns the script.
 
     It correctly handles YAML anchors and GitLab CI's 'extends' functionality,
@@ -81,6 +87,11 @@ def extract_script(filename, jobname):
 
 
 def run_extract_script(args):
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-02-25
+    :License: GPL-3.0
+    """
     script_code = extract_script(args.filename[0], args.jobname[0])
     print('\n'.join(script_code))
 
