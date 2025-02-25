@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-License-Identifier: GPL-3.0
 # SPDX-FileCopyrightText: 2024-2025 Daniel Mohr
 #    yaml2script.py
 #    Copyright (C) 2024-2025  Daniel Mohr
-#    Version: 0.1.1
-#    License: BSD 3-Clause License
+#    Version: 0.1.2
+#    License: GPLv3
 #
 # This script tries to extract the scripts from a '.gitlab-ci.yml' file.
 # In this way the scripts inside '.gitlab-ci.yml' can be tested/analyzed for
