@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "yaml2script"
+version = "2025.2.25"
+authors = [{name="Daniel Mohr", email="daniel.mohr@uni-greifswald.de"}]
+description = "`yaml2script` extracts the scripts from a '.gitlab-ci.yml' file."
+keywords=["yaml2script"]
+readme = "README.md"
+
+requires-python = ">=3.9"
+
+dependencies = ["shellcheck-py", "pyyaml"]
+
+[project.license]
+file = "LICENSE.md"
+name = "GPL-3.0"
+
+[project.scripts]
+yaml2script = "yaml2script:main"
