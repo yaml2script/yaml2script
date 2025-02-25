@@ -52,16 +52,25 @@ ruff:
     - ruff check --select NPY201 --fix --diff || echo "!!! todo !!!"
     - ruff check --select NPY201 --output-format=full
 
-alpine-latest:
+alpine-latest-pipx:
   stage: build_test
   image:
     name: alpine:latest
   extends: .display_env
   script:
     - apk add --no-cache pipx
+    - export PATH=$PATH:~/.local/bin
     - pipx install .
     - yaml2script || echo "that's OK"
     - pipx uninstall yaml2script
+
+alpine-latest-pip:
+  stage: build_test
+  image:
+    name: alpine:latest
+  extends: .display_env
+  script:
     - apk add --no-cache py3-pip py3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
     - yaml2script || echo "that's OK"
+    - pip3 uninstall yaml2script
