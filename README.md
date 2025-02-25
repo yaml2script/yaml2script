@@ -35,7 +35,7 @@ repos:
     hooks:
       - id: yaml2script
         additional_dependencies:
-	  - shellcheck-py
+          - shellcheck-py
 ```
 
 If you changed the name of the CI/CD configuration file:
@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: yaml2script
         additional_dependencies:
-	  - shellcheck-py
+          - shellcheck-py
         files: my_gitlab_ci.yaml
 ```
 
@@ -60,8 +60,8 @@ repos:
     hooks:
       - id: yaml2script
         additional_dependencies:
-	  - pycodestyle
+          - pycodestyle
         files: ''
-	types: [python]
-	args: [-parameter_check_command='']
+        types: [python]
+        args: [-parameter_check_command='']
 ```
