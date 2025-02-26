@@ -60,8 +60,23 @@ def run_version(_):
     print(f'yaml2script version {version}')
     return sys.exit(0)
 
+def _flatten_list(unflatten_list):
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-02-25
+    :License: GPLv3+
 
-def extract_script(filename, jobname):
+    flatten the given list
+    """
+    flatten_list = []
+    for item in unflatten_list:
+        if isinstance(item, list):
+            flatten_list.extend(_flatten_list(item))
+        else:
+            flatten_list.append(item)
+    return flatten_list
+
+def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-25
@@ -86,11 +101,13 @@ def extract_script(filename, jobname):
     for key in ['before_script', 'script', 'after_script']:
         if key in data[jobname]:
             script[key] = data[jobname][key]
-    script_code = ['#!/usr/bin/env sh']
+    script_code = []
+    if shebang:
+        script_code += [shebang]
     for key in ['before_script', 'script', 'after_script']:
         if key in script:
             script_code += script[key]
-    return script_code
+    return _flatten_list(script_code)
 
 
 def run_extract_script(args):
@@ -99,14 +116,15 @@ def run_extract_script(args):
     :Date: 2025-02-26
     :License: GPLv3+
     """
-    script_code = extract_script(args.filename[0], args.jobname[0])
+    script_code = extract_script(
+        args.filename[0], args.jobname[0], shebang=args.shebang[0])
     print(os.linesep.join(script_code))
     return sys.exit(0)
 
 
 def _run_check_script(
         filename, all_jobnames, check_command, parameter_check_command, *,
-        verbose=False, quiet=False):
+        shebang='#!/usr/bin/env sh', verbose=False, quiet=False):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-26
@@ -122,7 +140,8 @@ def _run_check_script(
         for jobname in all_jobnames:
             if verbose:
                 print('extract', jobname, 'from', filename)
-            script_code = os.linesep.join(extract_script(filename, jobname))
+            script_code = os.linesep.join(extract_script(
+                filename, jobname, shebang))
             scriptfilename = os.path.join(tmpdir, jobname)
             with open(scriptfilename, 'w', encoding='utf8') as fd:
                 fd.write(script_code + os.linesep)
@@ -156,7 +175,7 @@ def run_check_script(args):
     return _run_check_script(
         args.filename[0], args.jobname, args.check_command[0],
         args.parameter_check_command,
-        verbose=args.verbose, quiet=args.quiet)
+        shebang=args.shebang[0], verbose=args.verbose, quiet=args.quiet)
 
 
 def run_check_all_scripts(args):
@@ -173,7 +192,7 @@ def run_check_all_scripts(args):
     return _run_check_script(
         args.filename[0], jobnames, args.check_command[0],
         args.parameter_check_command,
-        verbose=args.verbose, quiet=args.quiet)
+        shebang=args.shebang[0], verbose=args.verbose, quiet=args.quiet)
 
 
 def main():
@@ -234,6 +253,15 @@ def main():
         nargs=1,
         type=str,
         help='This jobname will be extracted.')
+    parser_extract_script.add_argument(
+        '-shebang',
+        nargs=1,
+        type=str,
+        required=False,
+        default=["#!/usr/bin/env sh"],
+        dest='shebang',
+        help='The first line of the script output. You can set it to an empty'
+        'string to skip it. default: "#!/usr/bin/env sh"')
     # subparser check scripts
     preepilog = "Example:" + 2 * os.linesep
     preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle"
@@ -257,6 +285,15 @@ def main():
         nargs="+",
         type=str,
         help='These jobname(s) will be extracted and checked.')
+    parser_check_script.add_argument(
+        '-shebang',
+        nargs=1,
+        type=str,
+        required=False,
+        default=["#!/usr/bin/env sh"],
+        dest='shebang',
+        help='The first line of the script output. You can set it to an empty'
+        'string to skip it. default: "#!/usr/bin/env sh"')
     parser_check_script.add_argument(
         '-check_command',
         nargs=1,
@@ -306,6 +343,15 @@ def main():
         nargs=1,
         type=str,
         help='From this filename the script(s) will be extracted.')
+    parser_check_all_scripts.add_argument(
+        '-shebang',
+        nargs=1,
+        type=str,
+        required=False,
+        default=["#!/usr/bin/env sh"],
+        dest='shebang',
+        help='The first line of the script output. You can set it to an empty'
+        'string to skip it. default: "#!/usr/bin/env sh"')
     parser_check_all_scripts.add_argument(
         '-check_command',
         nargs=1,
