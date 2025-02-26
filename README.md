@@ -51,7 +51,7 @@ pip3 install --no-deps .
 
 Please see the help output.
 
-#### Examples
+### Examples
 
 Here are some examples of how to use `yaml2script`:
 
@@ -81,7 +81,8 @@ job/script `my_python-job` and check it with
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/):
 
 ```sh
-yaml2script check -check_command pycodestyle -parameter_check_command "" .gitlab-ci.yml my_python-job
+yaml2script check -check_command pycodestyle -parameter_check_command "" \
+  .gitlab-ci.yml my_python-job
 ```
 
 In addition you can use it via [pre-commit](https://pre-commit.com/).
@@ -112,7 +113,8 @@ repos:
       - id: yaml2script-check
         additional_dependencies:
           - pycodestyle
-	args: [-check_command='pycodestyle', -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
+        args: [-check_command='pycodestyle', -parameter_check_command='',
+               '.gitlab-ci.yml', 'my_python-job']
 ```
 
 Or you can run `yaml2script` it in a CI pipeline:

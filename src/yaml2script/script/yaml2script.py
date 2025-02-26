@@ -84,11 +84,11 @@ def extract_script(filename, jobname):
 def run_extract_script(args):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-25
+    :Date: 2025-02-26
     :License: GPL-3.0
     """
     script_code = extract_script(args.filename[0], args.jobname[0])
-    print('\n'.join(script_code))
+    print(os.linesep.join(script_code))
     return sys.exit(0)
 
 
@@ -97,21 +97,24 @@ def _run_check_script(
         verbose=False, quiet=False):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-25
+    :Date: 2025-02-26
     :License: GPL-3.0
     """
     # pylint: disable=too-many-arguments
     commoncmd = check_command
-    commoncmd += " " + ' '.join(parameter_check_command)
+    parameter_check_command = tuple(filter(None, parameter_check_command))
+    if len(parameter_check_command) > 1:
+        commoncmd += " " + ' '.join(parameter_check_command)
     returncode = 0
     with tempfile.TemporaryDirectory() as tmpdir:
         for jobname in all_jobnames:
             if verbose:
                 print('extract', jobname, 'from', filename)
-            script_code = '\n'.join(extract_script(filename, jobname))
+            script_code = os.linesep.join(extract_script(filename, jobname))
             scriptfilename = os.path.join(tmpdir, jobname)
             with open(scriptfilename, 'w', encoding='utf8') as fd:
-                fd.write(script_code)
+                fd.write(script_code + os.linesep)
+                fd.flush()
             cmd = commoncmd + " " + scriptfilename
             if verbose:
                 print('run', cmd)
@@ -170,15 +173,17 @@ def main():
     allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
     files.
     """
-    preepilog = "Examples:\n\n"
-    preepilog += "yaml2script extract .gitlab-ci.yml pre-commit\n\n"
-    preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle\n\n"
-    postepilog = "Author: Daniel Mohr\n"
+    preepilog = "Examples:" + 2 * os.linesep
+    preepilog += "yaml2script extract .gitlab-ci.yml pre-commit"
+    preepilog += 2 * os.linesep
+    preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle"
+    preepilog += 2 * os.linesep
+    postepilog = "Author: Daniel Mohr" + os.linesep
     postepilog += "yaml2script Version: "
     postepilog += importlib.metadata.version(
-        __package__.split('.', maxsplit=1)[0]) + "\n"
+        __package__.split('.', maxsplit=1)[0]) + os.linesep
     postepilog += "License: GPL-3.0"
-    postepilog += "\n\n"
+    postepilog += 2 * os.linesep
     epilog = preepilog + postepilog
     parser = argparse.ArgumentParser(
         description='yaml2script extracts the scripts '
@@ -217,8 +222,9 @@ def main():
         type=str,
         help='This jobname will be extracted.')
     # subparser check scripts
-    preepilog = "Example:\n\n"
-    preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle\n\n"
+    preepilog = "Example:" + 2 * os.linesep
+    preepilog += "yaml2script check .gitlab-ci.yml pre-commit pycodestyle"
+    preepilog += 2 * os.linesep
     epilog = preepilog + postepilog
     parser_check_script = subparsers.add_parser(
         'check',
@@ -270,8 +276,9 @@ def main():
         dest='verbose',
         help='verbose output')
     # subparser check all scripts
-    preepilog = "Example:\n\n"
-    preepilog += "yaml2script all .gitlab-ci.yml\n\n"
+    preepilog = "Example:" + 2 * os.linesep
+    preepilog += "yaml2script all .gitlab-ci.yml"
+    preepilog += 2 * os.linesep
     epilog = preepilog + postepilog
     parser_check_all_scripts = subparsers.add_parser(
         'all',

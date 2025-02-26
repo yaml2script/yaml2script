@@ -3,7 +3,6 @@
   entry: yaml2script all
   language: python
   files: .gitlab-ci.yml
-  verbose: true
   require_serial: true
   description: yaml2script checks all script(s) from a '.gitlab-ci.yml' file
 
@@ -12,7 +11,6 @@
   entry: yaml2script check
   language: python
   always_run: true
-  verbose: true
   pass_filenames: false
   require_serial: true
   description: yaml2script checks given job(s)/script(s) from a given file (e. g. '.gitlab-ci.yml')
