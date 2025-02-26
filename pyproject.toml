@@ -16,7 +16,7 @@ dependencies = ["pyyaml"]
 
 [project.license]
 file = "LICENSE.md"
-name = "GPL-3.0"
+name = "GPL-3.0-or-later"
 
 [project.scripts]
 yaml2script = "yaml2script.script.yaml2script:main"

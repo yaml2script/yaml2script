@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2024-2025 Daniel Mohr <daniel.mohr@uni-greifswald.de>
 #
-# SPDX-License-Identifier: GPL-3.0
+# SPDX-License-Identifier: GPL-3.0-or-later
 """
 :mod:`yaml2script`
 ==================
@@ -10,7 +10,7 @@ copyright + license
 ===================
 :Author: Daniel Mohr
 :Date: 2025-02-25
-:License: GPL-3.0
+:License: GPLv3+
 :Copyright: (C) 2024-2025 Daniel Mohr
 """
 # yaml2script extracts the scripts from a '.gitlab-ci.yml' file.

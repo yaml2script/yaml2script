@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-3.0
+# SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2024-2025 Daniel Mohr
 #    yaml2script.py
 #    Copyright (C) 2024-2025  Daniel Mohr
 #    Version: 0.1.3
-#    License: GPLv3
+#    License: GPLv3+
 #
 # This script tries to extract the scripts from a '.gitlab-ci.yml' file.
 # In this way the scripts inside '.gitlab-ci.yml' can be tested/analyzed for
@@ -42,7 +42,7 @@ def run_version(_):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-25
-    :License: GPL-3.0
+    :License: GPLv3+
     """
     version = importlib.metadata.version(__package__.split(".", maxsplit=1)[0])
     print(f'yaml2script version {version}')
@@ -53,7 +53,7 @@ def extract_script(filename, jobname):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-25
-    :License: GPL-3.0
+    :License: GPLv3+
 
     Extracts scripts from the specified filename and returns the script.
 
@@ -85,7 +85,7 @@ def run_extract_script(args):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-26
-    :License: GPL-3.0
+    :License: GPLv3+
     """
     script_code = extract_script(args.filename[0], args.jobname[0])
     print(os.linesep.join(script_code))
@@ -98,7 +98,7 @@ def _run_check_script(
     """
     :Author: Daniel Mohr
     :Date: 2025-02-26
-    :License: GPL-3.0
+    :License: GPLv3+
     """
     # pylint: disable=too-many-arguments
     commoncmd = check_command
@@ -139,7 +139,7 @@ def run_check_script(args):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-25
-    :License: GPL-3.0
+    :License: GPLv3+
     """
     return _run_check_script(
         args.filename[0], args.jobname, args.check_command[0],
@@ -151,7 +151,7 @@ def run_check_all_scripts(args):
     """
     :Author: Daniel Mohr
     :Date: 2025-02-25
-    :License: GPL-3.0
+    :License: GPLv3+
     """
     with open(args.filename[0], encoding='utf8') as fd:
         lines = fd.read()
@@ -182,7 +182,8 @@ def main():
     postepilog += "yaml2script Version: "
     postepilog += importlib.metadata.version(
         __package__.split('.', maxsplit=1)[0]) + os.linesep
-    postepilog += "License: GPL-3.0"
+    postepilog += "License: GNU General Public License Version 3 "
+    postepilog += "or any later version (GPLv3+)"
     postepilog += 2 * os.linesep
     epilog = preepilog + postepilog
     parser = argparse.ArgumentParser(

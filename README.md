@@ -117,6 +117,22 @@ repos:
                '.gitlab-ci.yml', 'my_python-job']
 ```
 
+If you check different jobs with different tools it makes sense to
+overwrite the default `name` of the hook, e. g.:
+
+```yaml
+repos:
+  - repo: to be done
+    rev: latest
+    hooks:
+      - id: yaml2script-check
+        name: yaml2script check 'my_python-job' with pycodestyle
+        additional_dependencies:
+          - pycodestyle
+        args: [-check_command='pycodestyle', -parameter_check_command='',
+               '.gitlab-ci.yml', 'my_python-job']
+```
+
 Or you can run `yaml2script` it in a CI pipeline:
 
 ```yaml
@@ -136,7 +152,7 @@ Author: Daniel Mohr.
 
 Date: 2025-02-26
 
-License: GPL-3.0
+License: GNU General Public License Version 3 or any later version(GPLv3+)
 
 Copyright (C) 2024-2025 Daniel Mohr
 
