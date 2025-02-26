@@ -90,8 +90,8 @@ def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
     files.
     """
-    with open(filename, encoding='utf8') as fd:
-        data = yaml.load(fd, Loader=yaml.SafeLoader)
+    with open(filename, encoding='utf8') as fide:
+        data = yaml.load(fide, Loader=yaml.SafeLoader)
     script = {}
     if 'extends' in data[jobname]:
         for key in ['before_script', 'script', 'after_script']:
@@ -133,22 +133,21 @@ def _run_check_script(
     :License: GPLv3+
     """
     # pylint: disable=too-many-arguments
-    commoncmd = check_command
     parameter_check_command = tuple(filter(None, parameter_check_command))
     if len(parameter_check_command) > 1:
-        commoncmd += " " + ' '.join(parameter_check_command)
+        check_command += " " + ' '.join(parameter_check_command)
     returncode = 0
     with tempfile.TemporaryDirectory() as tmpdir:
         for jobname in all_jobnames:
             if verbose:
                 print('extract', jobname, 'from', filename)
             script_code = os.linesep.join(extract_script(
-                filename, jobname, shebang))
+                filename, jobname, shebang=shebang))
             scriptfilename = os.path.join(tmpdir, jobname)
-            with open(scriptfilename, 'w', encoding='utf8') as fd:
-                fd.write(script_code + os.linesep)
-                fd.flush()
-            cmd = commoncmd + " " + scriptfilename
+            with open(scriptfilename, 'w', encoding='utf8') as fide:
+                fide.write(script_code + os.linesep)
+                fide.flush()
+            cmd = check_command + " " + scriptfilename
             if verbose:
                 print('run', cmd)
             cpi = subprocess.run(
@@ -186,8 +185,8 @@ def run_check_all_scripts(args):
     :Date: 2025-02-25
     :License: GPLv3+
     """
-    with open(args.filename[0], encoding='utf8') as fd:
-        lines = fd.read()
+    with open(args.filename[0], encoding='utf8') as fide:
+        lines = fide.read()
     jobnames = tuple(
         map(str.strip,
             re.findall(r'^([^ ]+):$', lines, re.MULTILINE)))
@@ -196,15 +195,11 @@ def run_check_all_scripts(args):
         args.parameter_check_command,
         shebang=args.shebang[0], verbose=args.verbose, quiet=args.quiet)
 
-
-def main():
+def _my_argument_parser():
     """
-    Extracts scripts from the specified '.gitlab-ci.yml' file and
-    prints them to stdout.
-
-    It correctly handles YAML anchors and GitLab CI's 'extends' functionality,
-    allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
-    files.
+    :Author: Daniel Mohr
+    :Date: 2025-02-26
+    :License: GPLv3+
     """
     preepilog = "Examples:" + 2 * os.linesep
     preepilog += "yaml2script extract .gitlab-ci.yml pre-commit"
@@ -385,6 +380,22 @@ def main():
         action='store_true',
         dest='verbose',
         help='verbose output')
+    return parser
+
+def main():
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-02-26
+    :License: GPLv3+
+
+    Extracts scripts from the specified '.gitlab-ci.yml' file and
+    prints them to stdout.
+
+    It correctly handles YAML anchors and GitLab CI's 'extends' functionality,
+    allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
+    files.
+    """
+    parser = _my_argument_parser()
     # parse arguments
     args = parser.parse_args()
     if args.subparser_name is not None:
