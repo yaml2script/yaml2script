@@ -137,7 +137,7 @@ repos:
         additional_dependencies:
           - pycodestyle
         args: [-shebang='#!/usr/bin/env python', -check_command='pycodestyle',
-	       -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
+               -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
 ```
 
 This would work on:
@@ -168,7 +168,7 @@ repos:
         additional_dependencies:
           - pycodestyle
         args: [-shebang='', -check_command='pycodestyle',
-	       -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
+               -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
 ```
 
 Or you can run `yaml2script` it in a CI pipeline:

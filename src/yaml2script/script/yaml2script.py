@@ -60,6 +60,7 @@ def run_version(_):
     print(f'yaml2script version {version}')
     return sys.exit(0)
 
+
 def _flatten_list(unflatten_list):
     """
     :Author: Daniel Mohr
@@ -75,6 +76,7 @@ def _flatten_list(unflatten_list):
         else:
             flatten_list.append(item)
     return flatten_list
+
 
 def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
