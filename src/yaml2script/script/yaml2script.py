@@ -195,6 +195,7 @@ def run_check_all_scripts(args):
         args.parameter_check_command,
         shebang=args.shebang[0], verbose=args.verbose, quiet=args.quiet)
 
+
 def _my_argument_parser():
     """
     :Author: Daniel Mohr
@@ -381,6 +382,7 @@ def _my_argument_parser():
         dest='verbose',
         help='verbose output')
     return parser
+
 
 def main():
     """
