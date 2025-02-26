@@ -57,11 +57,12 @@ alpine-latest-pipx:
     name: alpine:latest
   extends: .display_env
   script:
-    - apk add --no-cache pipx
+    - apk add --no-cache git npm pipx pre-commit py3-pytest py3-pytest-xdist
     - export PATH="$PATH":~/.local/bin
-    - pipx install . shellcheck-py
+    - pipx install . shellcheck-py pycodestyle
     - yaml2script --help
     - yaml2script all .gitlab-ci.yml
+    - pytest-3 --numprocesses=auto --verbose tests/main.py
     - pipx uninstall yaml2script
 
 alpine-latest-pip:
@@ -70,10 +71,11 @@ alpine-latest-pip:
     name: alpine:latest
   extends: .display_env
   script:
-    - apk add --no-cache py3-pip
-    - pip3 install --break-system-packages ".[shellcheck]"
+    - apk add --no-cache git npm pre-commit py3-pip py3-pytest py3-pytest-xdist
+    - pip3 install --break-system-packages ".[shellcheck, pycodestyle]"
     - yaml2script --help
     - yaml2script all .gitlab-ci.yml
+    - pytest-3 --numprocesses=auto --verbose tests/main.py
 
 alpine-latest-pip-system-packages:
   stage: build_test
@@ -81,8 +83,9 @@ alpine-latest-pip-system-packages:
     name: alpine:latest
   extends: .display_env
   script:
-    - apk add --no-cache py3-pip py3-yaml shellcheck
+    - apk add --no-cache git npm pre-commit py3-pip py3-pycodestyle py3-pytest py3-pytest-xdist py3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
     - yaml2script --help
     - yaml2script all .gitlab-ci.yml
+    - pytest-3 --numprocesses=auto --verbose tests/main.py
     - pip3 uninstall -y --break-system-packages yaml2script

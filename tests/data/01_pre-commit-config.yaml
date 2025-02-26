@@ -1,0 +1,10 @@
+repos:
+  - repo: repo_dir
+    rev: latest
+    hooks:
+      - id: yaml2script-check
+        name: yaml2script check with shellcheck
+        additional_dependencies:
+          - shellcheck-py
+        verbose: true
+        args: ['.gitlab-ci.yml', 'pre-commit']

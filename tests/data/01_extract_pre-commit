@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+cat /etc/os-release
+apk add --no-cache git npm pre-commit
+pre-commit run --all-files
