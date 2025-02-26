@@ -125,7 +125,7 @@ class TestScriptsExecutable(unittest.TestCase):
                     os.path.dirname(os.path.realpath(__file__)),
                     'data/01_gitlab-ci.yaml'),
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
-            cpi = subprocess.run(
+            subprocess.run(
                 "yaml2script check .gitlab-ci.yml pre-commit",
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
@@ -142,7 +142,7 @@ class TestScriptsExecutable(unittest.TestCase):
           TestScriptsExecutable.test_pre_commit_yaml2script_check_01
         """
         with tempfile.TemporaryDirectory() as repodir:
-            cpi = subprocess.run(
+            subprocess.run(
                 "git clone --bare . " + repodir,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True,
@@ -151,13 +151,13 @@ class TestScriptsExecutable(unittest.TestCase):
                     '../')),
                 timeout=self.subprocess_timeout,
                 check=True)
-            cpi = subprocess.run(
+            subprocess.run(
                 "git tag -f latest",
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True, cwd=repodir, timeout=self.subprocess_timeout,
                 check=False)
             with tempfile.TemporaryDirectory() as tmpdir:
-                cpi = subprocess.run(
+                subprocess.run(
                     "git init " + tmpdir,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
@@ -174,14 +174,14 @@ class TestScriptsExecutable(unittest.TestCase):
                     data = fide.read()
                 data = re.sub("repo_dir", repodir, data)
                 filename = os.path.join(tmpdir, '.pre-commit-config.yaml')
-                with open(filename, 'w') as fide:
+                with open(filename, 'w', encoding='utf8') as fide:
                     fide.write(data)
-                cpi = subprocess.run(
+                subprocess.run(
                     "git add .",
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
-                cpi = subprocess.run(
+                subprocess.run(
                     "pre-commit run --all-files",
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     shell=True, cwd=tmpdir, timeout=10*self.subprocess_timeout,
@@ -233,7 +233,7 @@ class TestScriptsExecutable(unittest.TestCase):
                     os.path.dirname(os.path.realpath(__file__)),
                     'data/02_gitlab-ci.yaml'),
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
-            cpi = subprocess.run(
+            subprocess.run(
                 "yaml2script check -shebang='#!/usr/bin/env python' "
                 "-check_command=pycodestyle -parameter_check_command='' "
                 ".gitlab-ci.yml my_python-job",
@@ -252,7 +252,7 @@ class TestScriptsExecutable(unittest.TestCase):
           TestScriptsExecutable.test_pre_commit_yaml2script_check_02
         """
         with tempfile.TemporaryDirectory() as repodir:
-            cpi = subprocess.run(
+            subprocess.run(
                 "git clone --bare . " + repodir,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True,
@@ -261,13 +261,13 @@ class TestScriptsExecutable(unittest.TestCase):
                     '../')),
                 timeout=self.subprocess_timeout,
                 check=True)
-            cpi = subprocess.run(
+            subprocess.run(
                 "git tag -f latest",
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True, cwd=repodir, timeout=self.subprocess_timeout,
                 check=False)
             with tempfile.TemporaryDirectory() as tmpdir:
-                cpi = subprocess.run(
+                subprocess.run(
                     "git init " + tmpdir,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
@@ -284,14 +284,14 @@ class TestScriptsExecutable(unittest.TestCase):
                     data = fide.read()
                 data = re.sub("repo_dir", repodir, data)
                 filename = os.path.join(tmpdir, '.pre-commit-config.yaml')
-                with open(filename, 'w') as fide:
+                with open(filename, 'w', encoding='utf8') as fide:
                     fide.write(data)
-                cpi = subprocess.run(
+                subprocess.run(
                     "git add .",
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
-                cpi = subprocess.run(
+                subprocess.run(
                     "pre-commit run --all-files",
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     shell=True, cwd=tmpdir, timeout=10*self.subprocess_timeout,
