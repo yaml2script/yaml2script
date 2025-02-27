@@ -81,7 +81,7 @@ def _flatten_list(unflatten_list):
 def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-25
+    :Date: 2025-02-27
     :License: GPLv3+
 
     Extracts scripts from the specified filename and returns the script.
@@ -109,7 +109,7 @@ def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     for key in ['before_script', 'script', 'after_script']:
         if key in script:
             script_code += script[key]
-    return _flatten_list(script_code)
+    return list(map(str.strip, _flatten_list(script_code)))
 
 
 def run_extract_script(args):
@@ -118,9 +118,9 @@ def run_extract_script(args):
     :Date: 2025-02-26
     :License: GPLv3+
     """
-    script_code = extract_script(
-        args.filename[0], args.jobname[0], shebang=args.shebang[0])
-    print(os.linesep.join(script_code))
+    script_code = os.linesep.join(extract_script(
+        args.filename[0], args.jobname[0], shebang=args.shebang[0]))
+    print(script_code)
     return sys.exit(0)
 
 
