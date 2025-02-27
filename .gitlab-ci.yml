@@ -14,7 +14,7 @@ stages:
     - cat /etc/os-release
 
 .test_pre-commit_yaml2script_check_01: &test_pre-commit_yaml2script_check_01
-    - git config --global init.defaultBranch
+    - git config --global init.defaultBranch main
     - repo_dir="$(mktemp -d)"
     - git clone --bare . "$repo_dir"
     - (cd "$repo_dir" && git tag -f latest)
