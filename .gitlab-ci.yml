@@ -17,6 +17,8 @@ pre-commit:
   script:
     - apk add --no-cache git npm pre-commit
     - pre-commit --version
+    # ignore file, it's a deliberate error test case
+    - rm tests/data/03_extract_ruff
     - pre-commit run --all-files
 
 pycodestyle:
@@ -63,6 +65,17 @@ alpine-latest-pipx:
     - yaml2script --help
     - yaml2script all .gitlab-ci.yml
     - pytest-3 --numprocesses=auto --verbose tests/main.py
+    - repo_dir="$(mktemp -d)"
+    - git clone --bare . "$repo_dir"
+    - (cd "$repo_dir" && git tag -f latest)
+    - tmp_dir="$(mktemp -d)"
+    - (cd "$tmp_dir" && git init)
+    - cp -p tests/data/01_pre-commit-config.yaml "$tmp_dir"/.pre-commit-config.yaml
+    - cp -p tests/data/ "$tmp_dir"/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
+    - |
+      sed -i "s#repo: repo_dir#repo: $repo_dir#" "$tmp_dir"/.pre-commit-config.yaml
+    - (cd "$tmp_dir" && git add .)
+    - (cd "$tmp_dir" && pre-commit run --all-files)
     - pipx uninstall yaml2script
 
 alpine-latest-pip:

@@ -199,7 +199,7 @@ def run_check_all_scripts(args):
 def _my_argument_parser():
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-26
+    :Date: 2025-02-27
     :License: GPLv3+
     """
     preepilog = "Examples:" + 2 * os.linesep
@@ -305,10 +305,13 @@ def _my_argument_parser():
         nargs="+",
         type=str,
         required=False,
-        default=["-e SC1091"],
+        default=[""],
         dest='parameter_check_command',
         metavar='param',
-        help='Parameter for the check command. default: "-e SC1091"')
+        help='Parameter for the check command. Since the script is extracted '
+        'in a temporary folder, external resources may not be available. '
+        'It would be sensible to inform the check command (e. g. shellcheck) '
+        'about this, e. g. with "-e SC1091". Default: ""')
     parser_check_script.add_argument(
         '-quiet',
         default=False,
@@ -363,10 +366,13 @@ def _my_argument_parser():
         nargs="+",
         type=str,
         required=False,
-        default=["-e SC1091"],
+        default=[""],
         dest='parameter_check_command',
         metavar='param',
-        help='Parameter for the check command. default: "-e SC1091"')
+        help='Parameter for the check command. Since the script is extracted '
+        'in a temporary folder, external resources may not be available. '
+        'It would be sensible to inform the check command (e. g. shellcheck) '
+        'about this, e. g. with "-e SC1091". Default: ""')
     parser_check_all_scripts.add_argument(
         '-quiet',
         default=False,

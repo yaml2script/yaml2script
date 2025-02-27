@@ -1,3 +1,10 @@
+---
+author: Daniel Mohr
+date: 2025-02-27
+license: GPL-3.0-or-later
+home: https://gitlab.com/yaml2script/yaml2script
+---
+
 # yaml2script
 
 `yaml2script` is a [Python](https://www.python.org/) script that
@@ -88,7 +95,7 @@ job/script `my_python-job` and check it with
 
 ```sh
 yaml2script check -shebang "#/usr/bin/env python" \
-  -check_command pycodestyle -parameter_check_command "" \
+  -check_command pycodestyle \
   .gitlab-ci.yml my_python-job
 ```
 
@@ -100,7 +107,7 @@ check tool (e. g. [shellcheck](https://www.shellcheck.net/) installed via
 
 ```yaml
 repos:
-  - repo: to be done
+  - repo: https://gitlab.com/yaml2script/yaml2script
     rev: latest
     hooks:
       - id: yaml2script-all
@@ -130,14 +137,14 @@ like:
 
 ```yaml
 repos:
-  - repo: to be done
+  - repo: https://gitlab.com/yaml2script/yaml2script
     rev: latest
     hooks:
       - id: yaml2script-check
         additional_dependencies:
           - pycodestyle
         args: [-shebang='#!/usr/bin/env python', -check_command='pycodestyle',
-               -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
+               '.gitlab-ci.yml', 'my_python-job']
 ```
 
 This would work on:
@@ -160,7 +167,7 @@ overwrite the default `name` of the hook, e. g.:
 
 ```yaml
 repos:
-  - repo: to be done
+  - repo: https://gitlab.com/yaml2script/yaml2script
     rev: latest
     hooks:
       - id: yaml2script-check
@@ -168,7 +175,7 @@ repos:
         additional_dependencies:
           - pycodestyle
         args: [-shebang='', -check_command='pycodestyle',
-               -parameter_check_command='', '.gitlab-ci.yml', 'my_python-job']
+               '.gitlab-ci.yml', 'my_python-job']
 ```
 
 Or you can run `yaml2script` it in a CI pipeline:

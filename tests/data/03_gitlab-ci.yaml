@@ -1,0 +1,9 @@
+ruff:
+  stage: pre
+  image:
+    name: alpine:latest
+  script:
+    - apk add --no-cache ruff
+    # next line raises SC2028 in shellcheck
+    - ruff check --unsafe-fixes --diff || echo "!!! \t todo \t !!!"
+    - ruff check --output-format=full

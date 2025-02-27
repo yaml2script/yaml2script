@@ -1,0 +1,7 @@
+repos:
+  - repo: repo_dir
+    rev: latest
+    hooks:
+      - id: yaml2script-all
+        additional_dependencies:
+          - shellcheck-py

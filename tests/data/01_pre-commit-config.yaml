@@ -7,4 +7,4 @@ repos:
         additional_dependencies:
           - shellcheck-py
         verbose: true
-        args: ['.gitlab-ci.yml', 'pre-commit']
+        args: ['-verbose', '.gitlab-ci.yml', 'pre-commit']

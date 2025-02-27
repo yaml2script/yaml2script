@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+apk add --no-cache ruff
+ruff check --unsafe-fixes --diff || echo "!!! \t todo \t !!!"
+ruff check --output-format=full
