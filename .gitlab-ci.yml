@@ -71,7 +71,7 @@ alpine-latest-pipx:
     - tmp_dir="$(mktemp -d)"
     - (cd "$tmp_dir" && git init)
     - cp -p tests/data/01_pre-commit-config.yaml "$tmp_dir"/.pre-commit-config.yaml
-    - cp -p tests/data/ "$tmp_dir"/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
+    - cp -p tests/data/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
     - |
       sed -i "s#repo: repo_dir#repo: $repo_dir#" "$tmp_dir"/.pre-commit-config.yaml
     - (cd "$tmp_dir" && git add .)
