@@ -9,9 +9,7 @@ authors = [{name="Daniel Mohr", email="daniel.mohr@uni-greifswald.de"}]
 description = "`yaml2script` extracts the scripts from a '.gitlab-ci.yml' file."
 keywords=["yaml2script"]
 readme = "README.md"
-
 requires-python = ">=3.9"
-
 dependencies = ["pyyaml"]
 
 [project.license]
@@ -25,3 +23,4 @@ yaml2script = "yaml2script.script.yaml2script:main"
 shellcheck = ["shellcheck-py"]
 pycodestyle = ["pycodestyle"]
 pylint = ["pylint"]
+test = ["pytest", "pytest-xdist"]
