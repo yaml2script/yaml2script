@@ -2,6 +2,7 @@ variables:
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$TAG"
   DEBIAN_FRONTEND: noninteractive
   APT_GET_INSTALL: "apt-get install -q -y"
+  DESCRIPTION: README.md
   PDFMANUAL: manual_yaml2script.pdf
   PDFMANUALURL: "$PACKAGE_REGISTRY_URL/$PDFMANUAL"
 
@@ -209,8 +210,6 @@ debian-latest-pip-system-packages:
     - |
         curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "$PDFMANUAL" "$PDFMANUALURL"
     - echo "TAG=$(yaml2script version | cut -d ' ' -f 3)" > variables.env
-    - |
-        echo "DESCRIPTION=$(sed "s/rev: latest/rev: $(yaml2script version -o)/g" README.md)" >> variables.env
     - cat variables.env
     - pip3 uninstall -y --break-system-packages yaml2script
   coverage: '/^TOTAL\s*[0-9]+\s*[0-9]+\s*([0-9]+\%)$/'
