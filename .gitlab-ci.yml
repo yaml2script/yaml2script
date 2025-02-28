@@ -157,13 +157,39 @@ debian-latest-pip-system-packages:
     - yaml2script --help
     - yaml2script all .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
-    - pytest-3 --numprocesses=auto --cov=yaml2script --no-cov-on-fail --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
+    - pytest-3 --numprocesses=auto --cov=yaml2script --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
+    - $APT_GET_INSTALL latexmk texlive-latex-extra texlive-latex-recommended make python3-recommonmark python3-sphinx python3-sphinx-argparse rsync tex-gyre
+    - ./create_doc
+    - mv manual_yaml2script public
     - pip3 uninstall -y --break-system-packages yaml2script
   coverage: '/^TOTAL\s*[0-9]+\s*[0-9]+\s*([0-9]+\%)$/'
   artifacts:
     paths:
+      - manual_yaml2script.pdf
       - public
     reports:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+
+pages:
+  stage: deploy
+  image:
+    name: alpine:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  dependencies:
+    - debian-latest
+  script:
+    - date
+    - apk add --no-cache pipx
+    - export PATH="$PATH":"$HOME/.local/bin"
+    - pipx install anybadge
+    - anybadge -l "documentation as" -v "pdf" -f documentation_pdf.svg -c orange -o
+    - anybadge -l "documentation as" -v "html" -f documentation_html.svg -c fuchsia -o
+  artifacts:
+    paths:
+      - documentation_pdf.svg
+      - documentation_html.svg
+      - manual_yaml2script.pdf
+      - public

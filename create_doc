@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -e
+
+function create_pdf() {
+    (
+	cd docs || exit 1
+	make latexpdf || exit 1
+	make latexpdf || exit 1
+	cp -p _build/latex/yaml2script.pdf ../manual_yaml2script.pdf || exit 1
+    ) || exit 1
+}
+
+function create_html() {
+    skipcp=$1
+    if [ "$skipcp" != "true" ]; then
+	sed '/^---$/,/^---$/d' README.md | grep -v -e "---" > docs/README.md
+	cp -p LICENSE.md docs/
+    fi
+    if [ -f docs/test_coverage_report/index.html ]; then
+	rm docs/test_coverage_report/index.html
+    fi
+    if [ -d coverage_report ]; then
+	cp -p coverage_report/index.html docs/test_coverage_report/
+    fi
+
+    (
+	cd docs || exit 1
+	make html || exit 1
+    ) || exit 1
+
+    outputdir="manual_yaml2script"
+    if [ ! -d $outputdir ]; then
+	mkdir $outputdir
+    fi
+    rsync --delete-after --archive --one-file-system --links --hard-links --sparse --checksum docs/_build/html/ $outputdir/
+    if [ -d coverage_report ]; then
+	rsync -a -r --delete --exclude=index.rst --exclude=index.html coverage_report/ $outputdir/test_coverage_report/
+    fi
+}
+
+cp -p README.md LICENSE.md docs/ || exit $?
+
+if [ $# -eq 0 ]; then
+    # build all documentation formats in parallel
+    create_pdf &
+    pid1=$!
+    create_html skipcp &
+    pid2=$!
+    wait $pid1 $pid2 && echo -e "\n+-------+\n| ready |\n+-------+"
+else
+    if [ "$1" = "html" ]; then
+	create_html
+    fi
+    if [ "$1" = "pdf" ]; then
+	create_pdf
+    fi
+    echo -e "\n+-------+\n| ready |\n+-------+"
+fi
