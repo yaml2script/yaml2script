@@ -218,6 +218,7 @@ debian-latest-pip-system-packages:
       - $PDFMANUAL
       - public
     reports:
+      dotenv: variables.env
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
@@ -238,7 +239,7 @@ release_job:
     name: 'yaml2script v$TAG'
     description: '$DESCRIPTION'
     tag_name: '$TAG'
-    ref: '$TAG_COMMIT_SHA'
+    ref: '$CI_COMMIT_SHA'
     assets:
       links:
         - name: $PDFMANUAL
