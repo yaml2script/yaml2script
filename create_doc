@@ -13,7 +13,7 @@ function create_pdf() {
 function create_html() {
     skipcp=$1
     if [ "$skipcp" != "true" ]; then
-	sed '/^---$/,/^---$/d' README.md | grep -v -e "---" > docs/README.md
+	sed '/^---$/,/^---$/d' README.md | sed "s/rev: latest/rev: $(yaml2script version -o)/g" | > docs/README.md
 	cp -p LICENSE.md docs/
     fi
     if [ -f docs/test_coverage_report/index.html ]; then
