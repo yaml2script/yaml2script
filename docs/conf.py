@@ -33,7 +33,6 @@ copyright = '2024-2025, Daniel Mohr'  # pylint: disable=redefined-builtin
 author = 'Daniel Mohr'
 
 # The full version, including alpha/beta/rc tags
-#release = '2025.2.28'
 release = importlib.metadata.version('yaml2script')
 
 # -- General configuration ---------------------------------------------------
