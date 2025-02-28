@@ -209,7 +209,8 @@ debian-latest-pip-system-packages:
     - |
         curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "$PDFMANUAL" "$PDFMANUALURL"
     - echo "TAG=$(yaml2script version | cut -d ' ' -f 3)" > variables.env
-    - echo "DESCRIPTION=$(sed \"s/rev: latest/rev: $(yaml2script version -o)/g\" README.md)" >> variables.env
+    - |
+        echo "DESCRIPTION=$(sed "s/rev: latest/rev: $(yaml2script version -o)/g" README.md)" >> variables.env
     - cat variables.env
     - pip3 uninstall -y --break-system-packages yaml2script
   coverage: '/^TOTAL\s*[0-9]+\s*[0-9]+\s*([0-9]+\%)$/'
