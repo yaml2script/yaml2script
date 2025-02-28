@@ -202,7 +202,7 @@ debian-latest-pip-system-packages:
     - yaml2script all .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest-3 --numprocesses=auto --cov=yaml2script --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
-    - $APT_GET_INSTALL latexmk texlive-latex-extra texlive-latex-recommended make python3-recommonmark python3-sphinx python3-sphinx-argparse rsync tex-gyre
+    - $APT_GET_INSTALL curl latexmk texlive-latex-extra texlive-latex-recommended make python3-recommonmark python3-sphinx python3-sphinx-argparse rsync tex-gyre
     - ./create_doc
     - mv manual_yaml2script public
     # upload pdf manual
