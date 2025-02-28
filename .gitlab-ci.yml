@@ -157,7 +157,7 @@ debian-latest-pip-system-packages:
     - yaml2script --help
     - yaml2script all .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
-    - pytest-3 --numprocesses=auto --cov=yaml2script --no-cov-on-fail --cov-report=html:coverage_report/ --verbose tests/main.py
+    - pytest-3 --numprocesses=auto --cov=yaml2script --no-cov-on-fail --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
     - pip3 uninstall -y --break-system-packages yaml2script
   coverage: '/^TOTAL\s*[0-9]+\s*[0-9]+\s*([0-9]+\%)$/'
   artifacts:
