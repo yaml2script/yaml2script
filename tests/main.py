@@ -18,6 +18,7 @@ Or you can run only one test, e. g.::
 """
 
 import importlib.metadata
+import json
 import os
 import re
 import shutil
@@ -78,7 +79,7 @@ class TestScriptsExecutable(unittest.TestCase):
         yaml2script version
 
         :Author: Daniel Mohr
-        :Date: 2025-02-26
+        :Date: 2025-02-28
 
         env python3 main.py \
           TestScriptsExecutable.test_yaml2script_version
@@ -98,6 +99,20 @@ class TestScriptsExecutable(unittest.TestCase):
         else:
             self.assertEqual(cpi.stdout.strip().decode(),
                              f'yaml2script version {version}')
+        cpi = subprocess.run(
+            "yaml2script version -o",
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            shell=True, timeout=self.subprocess_timeout, check=True)
+        if version is not None:
+            self.assertEqual(cpi.stdout.strip().decode(), version)
+        cpi = subprocess.run(
+            "yaml2script version -json",
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            shell=True, timeout=self.subprocess_timeout, check=True)
+        data = json.loads(cpi.stdout.decode())
+        self.assertEqual(data["Name"], "yaml2script")
+        if version is not None:
+            self.assertEqual(data["Version"], version)
 
     def test_yaml2script_extract_01(self):
         """

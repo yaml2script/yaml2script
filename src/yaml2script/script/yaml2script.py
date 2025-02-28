@@ -40,6 +40,7 @@ shellcheck_.gitlab-ci.yml:
 
 import argparse
 import importlib
+import json
 import os
 import re
 import subprocess
@@ -50,14 +51,19 @@ import warnings
 import yaml
 
 
-def run_version(_):
+def run_version(args):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-25
+    :Date: 2025-02-28
     :License: GPLv3+
     """
     version = importlib.metadata.version(__package__.split(".", maxsplit=1)[0])
-    print(f'yaml2script version {version}')
+    if args.only_number:
+        print(version)
+    elif args.json:
+        print(json.dumps(dict(importlib.metadata.metadata('yaml2script'))))
+    else:
+        print(f'yaml2script version {version}')
     return sys.exit(0)
 
 
@@ -232,6 +238,23 @@ def _my_argument_parser():
         description='display version information of detloclcheck',
         epilog=epilog)
     parser_version.set_defaults(func=run_version)
+    parser_version.add_argument(
+        '-only_number',
+        default=False,
+        required=False,
+        action='store_true',
+        dest='only_number',
+        help='Only output the version number.')
+    parser_version.add_argument(
+        '-json',
+        default=False,
+        required=False,
+        action='store_true',
+        dest='json',
+        help='Output as json all metadata. '
+        'If "-only_number" is set, no json ouput will be done. '
+        'Example to get onlye the version: '
+        'yaml2script version -j | jq .Version')
     # subparser extract_script
     parser_extract_script = subparsers.add_parser(
         'extract',
