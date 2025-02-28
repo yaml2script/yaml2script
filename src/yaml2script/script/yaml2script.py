@@ -129,12 +129,12 @@ def _run_check_script(
         shebang='#!/usr/bin/env sh', verbose=False, quiet=False):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-26
+    :Date: 2025-02-28
     :License: GPLv3+
     """
     # pylint: disable=too-many-arguments
     parameter_check_command = tuple(filter(None, parameter_check_command))
-    if len(parameter_check_command) > 1:
+    if len(parameter_check_command) >= 1:
         check_command += " " + ' '.join(parameter_check_command)
     returncode = 0
     with tempfile.TemporaryDirectory() as tmpdir:

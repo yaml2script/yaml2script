@@ -1,7 +1,7 @@
 """
 :Author: Daniel Mohr
 :Email: daniel.mohr@uni-greifswald.de
-:Date: 2025-02-27
+:Date: 2025-02-28
 :License: GPL-3.0-or-later
 
 aggregation of tests
@@ -53,6 +53,25 @@ class TestScriptsExecutable(unittest.TestCase):
         with self.assertRaises(subprocess.CalledProcessError):
             # parameter is necessary
             cpi.check_returncode()
+
+    def test_yaml2script_help_output(self):
+        """
+        yaml2script
+
+        :Author: Daniel Mohr
+        :Date: 2025-02-28
+
+        env python3 main.py \
+          TestScriptsExecutable.test_yaml2script_help_output
+        """
+        cpi = subprocess.run(
+            "yaml2script -h",
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            shell=True, timeout=self.subprocess_timeout, check=True)
+        self.assertTrue(
+                cpi.stdout.strip().decode().endswith(
+                    'License: GNU General Public License Version 3 '
+                    'or any later version (GPLv3+)'))
 
     def test_yaml2script_version(self):
         """
@@ -396,6 +415,29 @@ class TestScriptsExecutable(unittest.TestCase):
             with self.assertRaises(subprocess.CalledProcessError):
                 cpi.check_returncode()
 
+    def test_yaml2script_check_03_ignore(self):
+        """
+        yaml2script check 03
+
+        :Author: Daniel Mohr
+        :Date: 2025-02-28
+
+        env python3 main.py \
+          TestScriptsExecutable.test_yaml2script_check_03_ignore
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/03_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            subprocess.run(
+                "yaml2script check -verbose .gitlab-ci.yml ruff "
+                "-parameter_check_command '-e SC2028'",
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=True)
+
     def test_yaml2script_all_03(self):
         """
         yaml2script all 03
@@ -419,6 +461,29 @@ class TestScriptsExecutable(unittest.TestCase):
                 check=False)
             with self.assertRaises(subprocess.CalledProcessError):
                 cpi.check_returncode()
+
+    def test_yaml2script_all_03_ignore(self):
+        """
+        yaml2script all 03
+
+        :Author: Daniel Mohr
+        :Date: 2025-02-28
+
+        env python3 main.py \
+          TestScriptsExecutable.test_yaml2script_all_03_ignore
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/03_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            subprocess.run(
+                "yaml2script all -verbose .gitlab-ci.yml "
+                "-parameter_check_command '-e SC2028'",
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=True)
 
     def test_pre_commit_yaml2script_all_03(self):
         """

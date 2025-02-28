@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yaml2script"
-version = "0.1.3"
+version = "0.1.4"
 authors = [{name="Daniel Mohr", email="daniel.mohr@uni-greifswald.de"}]
 description = "`yaml2script` extracts the scripts from a '.gitlab-ci.yml' file."
 keywords=["yaml2script"]
