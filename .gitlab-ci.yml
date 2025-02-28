@@ -178,8 +178,6 @@ pages:
     name: alpine:latest
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  dependencies:
-    - debian-latest
   script:
     - date
     - apk add --no-cache pipx
