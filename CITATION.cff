@@ -1,0 +1,29 @@
+cff-version: 1.3.0
+title: yaml2script
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+authors:
+  - given-names: Daniel
+    family-names: Mohr
+    orcid: https://orcid.org/0000-0002-9382-6586
+    affiliation:
+      - Institute of Physics, University of Greifswald, Greifswald, Germany
+      - Institute of Atmospheric Physics, DLR German Aerospace Center, Oberpfaffenhofen, Germany
+identifiers:
+  - description: The concept DOI of the work.
+    type: doi
+    value: 10.5281/zenodo.14962489
+repository-code: https://gitlab.com/projects/67499090
+url: https://gitlab.com/yaml2script/yaml2script
+abstract: |-
+  yaml2script is a Python script that extracts shell scripts from a GitLab CI/CD configuration file .gitlab-ci.yml and allows you to test/analyze them with tools like shellcheck.
+keywords:
+  - yaml
+  - script
+  - python
+  - linter
+  - pre-commit
+  - pre-commit-hook
+  - developer-tools
+license: GPL-3.0-or-later
+doi: 10.5281/zenodo.14962489

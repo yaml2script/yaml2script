@@ -236,6 +236,7 @@ release_job:
   extends: .display_env
   script:
     - echo "running release_job for $TAG"
+    - wget "https://zenodo.org/badge/DOI/10.5281/zenodo.14962489.svg"
   release:
     name: 'yaml2script v$TAG'
     description: '$DESCRIPTION'
@@ -247,6 +248,9 @@ release_job:
           filepath: /$PDFMANUAL
           url: $PDFMANUALURL
           link_type: other
+  artifacts:
+    paths:
+      - "zenodo.14962489.svg"
 
 trigger_check_release:
   stage: check_release
@@ -272,8 +276,8 @@ pages:
     - if: $CI_COMMIT_TAG
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  extends: .display_env
   script:
-    - date
     - apk add --no-cache pipx
     - export PATH="$PATH":"$HOME/.local/bin"
     - pipx install anybadge
@@ -285,3 +289,19 @@ pages:
       - documentation_html.svg
       - manual_yaml2script.pdf
       - public
+
+trigger_deploy2zenodo:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    TAG: $TAG
+    TAG_COMMIT_SHA: $CI_COMMIT_SHA
+  trigger:
+    project: daniel_mohr/deploy_yaml2script_to_zenodo
+    strategy: depend
+    forward:
+      yaml_variables: true
+      pipeline_variables: false
