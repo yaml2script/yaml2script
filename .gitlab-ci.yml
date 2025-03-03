@@ -299,6 +299,7 @@ trigger_deploy2zenodo:
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA
+    TAG_COMMIT_TIMESTAMP: $CI_COMMIT_TIMESTAMP
   trigger:
     project: daniel_mohr/deploy_yaml2script_to_zenodo
     strategy: depend
