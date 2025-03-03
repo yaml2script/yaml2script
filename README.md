@@ -1,6 +1,6 @@
 ---
 author: Daniel Mohr
-date: 2025-02-27
+date: 2025-03-03
 license: GPL-3.0-or-later
 home: https://gitlab.com/yaml2script/yaml2script
 ---
@@ -31,7 +31,7 @@ You can install `yaml2script` by running the following command:
 pip3 install .
 ```
 
-Furthermore, you will probably need your tool for checking your code such as
+Furthermore, you will probably need a tool for checking your code such as
 [shellcheck](https://www.shellcheck.net/),
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/),
 [pylint](https://github.com/pylint-dev/pylint)
@@ -101,9 +101,10 @@ yaml2script check -shebang "#/usr/bin/env python" \
 
 In addition you can use it via [pre-commit](https://pre-commit.com/).
 
-Therefore you need a config `.pre-commit-config.yaml` defining at least your
-check tool (e. g. [shellcheck](https://www.shellcheck.net/) installed via
-[shellcheck-py](https://github.com/shellcheck-py/shellcheck-py)):
+For this you need a configuration `.pre-commit-config.yaml`, which at least
+defines the installation of your check tool
+(e.g. [shellcheck](https://www.shellcheck.net/) installed by
+[shellcheck-py](https://github.com/shellcheck-py/shellcheck-py)).
 
 ```yaml
 repos:
@@ -115,7 +116,8 @@ repos:
           - shellcheck-py
 ```
 
-This would work on:
+With this configuration, for example, the following yaml file would be tested
+for errors.
 
 ```yaml
 .display_env:
@@ -131,7 +133,7 @@ pre-commit:
     - pre-commit run --all-files
 ```
 
-Too check only a specific job with
+To check only a specific job with
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/) you could do something
 like:
 
@@ -147,7 +149,8 @@ repos:
                '.gitlab-ci.yml', 'my_python-job']
 ```
 
-This would work on:
+With the previous configuration, for example, the following python job could
+be extracted and tested by `pycodestyle`.
 
 ```yaml
 .prepare-python-env: &prepare-python-env
@@ -178,7 +181,7 @@ repos:
                '.gitlab-ci.yml', 'my_python-job']
 ```
 
-Or you can run `yaml2script` it in a CI pipeline:
+Or you can run `yaml2script` in a CI pipeline:
 
 ```yaml
 shellcheck_.gitlab-ci.yml:
