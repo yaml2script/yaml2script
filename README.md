@@ -74,8 +74,9 @@ Extract the specific job `foo` from a `.gitlab-ci.yml` file as a shell script:
 yaml2script extract .gitlab-ci.yml foo
 ```
 
-If you do not use the default name of the CI/CD configuration file
-you can adapt the line and choose your configuration file.
+If you do not use the default name `.gitlab-ci.yml` of the
+CI/CD configuration file you can adapt the line and choose your
+configuration file name.
 
 Check the job/script `foo` from a `.gitlab-ci.yml` file using `shellcheck`:
 

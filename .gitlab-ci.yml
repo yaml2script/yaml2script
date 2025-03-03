@@ -10,6 +10,7 @@ stages:
   - pre
   - build_test
   - create_release
+  - check_release
   - deploy
 
 .display_env:
@@ -246,6 +247,22 @@ release_job:
           filepath: /$PDFMANUAL
           url: $PDFMANUALURL
           link_type: other
+
+trigger_check_release:
+  stage: check_release
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    TAG: $TAG
+    TAG_COMMIT_SHA: $CI_COMMIT_SHA
+  trigger:
+    project: yaml2script/check_release
+    strategy: depend
+    forward:
+      yaml_variables: true
+      pipeline_variables: false
 
 pages:
   stage: deploy
