@@ -3,6 +3,9 @@ author: Daniel Mohr
 date: 2025-03-03
 license: GPL-3.0-or-later
 home: https://gitlab.com/yaml2script/yaml2script
+mirror: https://github.com/yaml2script/yaml2script
+latest_release: https://gitlab.com/yaml2script/yaml2script/-/releases/permalink/latest
+doi: 10.5281/zenodo.14962489
 ---
 
 # yaml2script
@@ -199,7 +202,7 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2025-02-26
+Date: 2025-03-03
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 
