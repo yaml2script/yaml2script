@@ -1,9 +1,10 @@
 ---
 author: Daniel Mohr
-date: 2025-03-03
+date: 2025-03-05
 license: GPL-3.0-or-later
 home: https://gitlab.com/yaml2script/yaml2script
 mirror: https://github.com/yaml2script/yaml2script
+documentation: https://yaml2script.gitlab.io/yaml2script/
 latest_release: https://gitlab.com/yaml2script/yaml2script/-/releases/permalink/latest
 doi: https://doi.org/10.5281/zenodo.14962489
 ---
@@ -22,6 +23,28 @@ functionality,
 allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
 files.
 
+see: [yaml2script’s documentation](https://yaml2script.gitlab.io/yaml2script/)
+
+## Why is yaml2script useful?
+
+* **Automated testing**:
+  With yaml2script, you can automatically test your CI/CD scripts and
+  ensure they are working as expected and correctly.
+* **Security audits**:
+  By using tools like shellcheck, yaml2script can help identify and
+  fix security vulnerabilities in your scripts.
+* **Code quality**:
+  yaml2script can also be used to improve the code quality of your scripts
+  by analyzing them with tools like pycodestyle and pylint.
+* **Complex scripts**:
+  If you have complex scripts in your .gitlab-ci.yml file,
+  yaml2script can help extract and test them to ensure they are working
+  correctly.
+* **Integration with CI/CD pipelines**:
+  yaml2script can be integrated directly into your CI/CD pipeline to
+  automate testing and analysis, for example via
+  [pre-commit](https://pre-commit.com/).
+
 ## installation
 
 `yaml2script` requires Python 3 and the package [pyyaml](https://pyyaml.org/).
@@ -31,7 +54,7 @@ Or you can have it installed automatically as a dependency of pip.
 You can install `yaml2script` by running the following command:
 
 ```sh
-pip3 install .
+pipx install git+https://gitlab.com/yaml2script/yaml2script.git
 ```
 
 Furthermore, you will probably need a tool for checking your code such as
@@ -45,13 +68,36 @@ You can also install some or all of these as optional dependency(ies):
 pip3 install ".[shellcheck, pycodestyle, pylint]"
 ```
 
+As far as I know you can not install these optional dependencies with `pipx`.
+But you can inject them manually, e. g.:
+
+```sh
+pipx install git+https://gitlab.com/yaml2script/yaml2script.git
+pipx inject yaml2script shellcheck-py pycodestyle pylint
+```
+
 If you use all dependencies from your operating system's package management
 system here is an example for [Alpine Linux](https://alpinelinux.org/) using
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/):
 
 ```sh
 apk add --no-cache py3-pip py3-yaml py3-pycodestyle
-pip3 install --no-deps .
+pipx install --system-site-packages git+https://gitlab.com/yaml2script/yaml2script.git
+```
+
+Or:
+
+```sh
+apk add --no-cache py3-pip py3-yaml py3-pycodestyle
+pip3 install --no-deps https://gitlab.com/yaml2script/yaml2script/-/archive/0.1.4/yaml2script-0.1.4.zip
+```
+
+You can also use other Linux derivatives, e. g. for
+[debian](https://www.debian.org/) you could do:
+
+```sh
+apt-get install git npm pre-commit pycodestyle python3-pip python3-pytest python3-pytest-cov python3-pytest-xdist python3-yaml shellcheck
+pipx install --system-site-packages git+https://gitlab.com/yaml2script/yaml2script.git
 ```
 
 ## Usage
@@ -65,7 +111,8 @@ pip3 install --no-deps .
 * `all`: Checks all scripts from the specified `.gitlab-ci.yml` file
          using a tool like `shellcheck`.
 
-Please see the help output.
+Please see the help output or
+[yaml2script’s documentation: command line script](https://yaml2script.gitlab.io/yaml2script/script_yaml2script.html).
 
 ### Examples
 
@@ -120,7 +167,9 @@ repos:
           - shellcheck-py
 ```
 
-With this configuration, for example, the following yaml file would be tested
+To ensure a repeatable experience, as described in [Using the latest version for a repository](https://pre-commit.com/#using-the-latest-version-for-a-repository), please replace `rev: latest` with the version you intend to use. The value latest is only a placeholder in this README and can not be used directly (not existing).
+
+With this configuration, for example, the following YAML file would be tested
 for errors.
 
 ```yaml
@@ -135,6 +184,20 @@ pre-commit:
   script:
     - apk add --no-cache git npm pre-commit
     - pre-commit run --all-files
+```
+
+Sometimes it may make sense to add additional parameters, e. g. the following
+pre-commit configuration would skip `SC1091`:
+
+```yaml
+repos:
+  - repo: https://gitlab.com/yaml2script/yaml2script
+    rev: latest
+    hooks:
+      - id: yaml2script-all
+        additional_dependencies:
+          - shellcheck-py
+        args: [-parameter_check_command=-e SC1091]
 ```
 
 To check only a specific job with
@@ -202,7 +265,7 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2025-03-03
+Date: 2025-03-05
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 
