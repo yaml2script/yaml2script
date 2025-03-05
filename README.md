@@ -82,22 +82,26 @@ system here is an example for [Alpine Linux](https://alpinelinux.org/) using
 
 ```sh
 apk add --no-cache py3-pip py3-yaml py3-pycodestyle
-pipx install --system-site-packages git+https://gitlab.com/yaml2script/yaml2script.git
+pipx install --system-site-packages \
+  git+https://gitlab.com/yaml2script/yaml2script.git
 ```
 
 Or:
 
 ```sh
 apk add --no-cache py3-pip py3-yaml py3-pycodestyle
-pip3 install --no-deps https://gitlab.com/yaml2script/yaml2script/-/archive/0.1.4/yaml2script-0.1.4.zip
+pip3 install --no-deps \
+  https://gitlab.com/yaml2script/yaml2script/-/archive/0.1.4/yaml2script-0.1.4.zip
 ```
 
 You can also use other Linux derivatives, e. g. for
 [debian](https://www.debian.org/) you could do:
 
 ```sh
-apt-get install git npm pre-commit pycodestyle python3-pip python3-pytest python3-pytest-cov python3-pytest-xdist python3-yaml shellcheck
-pipx install --system-site-packages git+https://gitlab.com/yaml2script/yaml2script.git
+apt-get install git npm pre-commit pycodestyle python3-pip python3-pytest \
+  python3-pytest-cov python3-pytest-xdist python3-yaml shellcheck
+pipx install --system-site-packages \
+  git+https://gitlab.com/yaml2script/yaml2script.git
 ```
 
 ## Usage
@@ -167,7 +171,11 @@ repos:
           - shellcheck-py
 ```
 
-To ensure a repeatable experience, as described in [Using the latest version for a repository](https://pre-commit.com/#using-the-latest-version-for-a-repository), please replace `rev: latest` with the version you intend to use. The value latest is only a placeholder in this README and can not be used directly (not existing).
+To ensure a repeatable experience, as described in
+[Using the latest version for a repository](https://pre-commit.com/#using-the-latest-version-for-a-repository),
+please replace `rev: latest` with the version you intend to use.
+The value latest is only a placeholder in this README and
+can not be used directly (not existing).
 
 With this configuration, for example, the following YAML file would be tested
 for errors.
