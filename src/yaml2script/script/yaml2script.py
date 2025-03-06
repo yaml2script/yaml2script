@@ -112,7 +112,7 @@ class _ReferenceClass:
                 return_value = \
                     '# reference ' + \
                     f'[{self.node.value[0].value}, ' + \
-                    f'{self.node.value[1].value}] not defined in this file'\
+                    f'{self.node.value[1].value}] not defined in this file'
                 warnings.warn(return_value)
         return [return_value]
 
