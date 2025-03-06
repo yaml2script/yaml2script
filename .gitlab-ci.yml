@@ -19,18 +19,18 @@ stages:
     - cat /etc/os-release
 
 .test_pre-commit_yaml2script_check_01: &test_pre-commit_yaml2script_check_01
-    - git config --global init.defaultBranch main
-    - repo_dir="$(mktemp -d)"
-    - git clone --bare . "$repo_dir"
-    - (cd "$repo_dir" && git tag -f latest)
-    - tmp_dir="$(mktemp -d)"
-    - (cd "$tmp_dir" && git init)
-    - cp -p tests/data/01_pre-commit-config.yaml "$tmp_dir"/.pre-commit-config.yaml
-    - cp -p tests/data/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
-    - |
-      sed -i "s#repo: repo_dir#repo: $repo_dir#" "$tmp_dir"/.pre-commit-config.yaml
-    - (cd "$tmp_dir" && git add .)
-    - (cd "$tmp_dir" && pre-commit run --all-files)
+  - git config --global init.defaultBranch main
+  - repo_dir="$(mktemp -d)"
+  - git clone --bare . "$repo_dir"
+  - (cd "$repo_dir" && git tag -f latest)
+  - tmp_dir="$(mktemp -d)"
+  - (cd "$tmp_dir" && git init)
+  - cp -p tests/data/01_pre-commit-config.yaml "$tmp_dir"/.pre-commit-config.yaml
+  - cp -p tests/data/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
+  - |
+    sed -i "s#repo: repo_dir#repo: $repo_dir#" "$tmp_dir"/.pre-commit-config.yaml
+  - (cd "$tmp_dir" && git add .)
+  - (cd "$tmp_dir" && pre-commit run --all-files)
 
 pre-commit:
   stage: pre

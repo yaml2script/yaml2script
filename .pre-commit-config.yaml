@@ -11,7 +11,6 @@ repos:
       - id: check-merge-conflict
       - id: check-symlinks
       - id: check-toml
-      - id: check-yaml
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
@@ -32,6 +31,10 @@ repos:
     rev: v0.44.0
     hooks:
       - id: markdownlint
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
   - repo: https://gitlab.com/yaml2script/yaml2script
     rev: 0.1.4
     hooks:

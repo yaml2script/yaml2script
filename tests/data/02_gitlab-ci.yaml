@@ -1,6 +1,6 @@
 .prepare-python-env: &prepare-python-env
-    - import pydoc
-    - import re
+  - import pydoc
+  - import re
 
 my_python-job:
   stage: build_test
