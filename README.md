@@ -138,6 +138,8 @@ If you do not use the default name `.gitlab-ci.yml` of the
 CI/CD configuration file you can adapt the line and choose your
 configuration file name.
 
+#### Examples using `shellcheck` to check the script
+
 Check the job/script `foo` from a `.gitlab-ci.yml` file using `shellcheck`:
 
 ```sh
@@ -150,6 +152,15 @@ Check all jobs/scripts from a `.gitlab-ci.yml` file using `shellcheck`:
 yaml2script all .gitlab-ci.yml
 ```
 
+You can ignore a specific error by adding parameters for the check coommand,
+e. g.:
+
+```sh
+yaml2script all .gitlab-ci.yml -parameter_check_command "-e SC2034"
+```
+
+#### Examples using `pycodestyle` to check the script
+
 You can also do the check with another tool. For example to extract the Python
 job/script `my_python-job` and check it with
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/):
@@ -159,6 +170,8 @@ yaml2script check -shebang "#/usr/bin/env python" \
   -check_command pycodestyle \
   .gitlab-ci.yml my_python-job
 ```
+
+#### Examples using `yaml2script` via `pre-commit`
 
 In addition you can use it via [pre-commit](https://pre-commit.com/).
 
@@ -246,7 +259,7 @@ my_python-job:
     - print(pydoc.render_doc(re.findall))
 ```
 
-If you check different jobs with different tools it makes sense to
+If you check different jobs with different tools it could make sense to
 overwrite the default `name` of the hook, e. g.:
 
 ```yaml
@@ -261,6 +274,8 @@ repos:
         args: [-shebang='', -check_command='pycodestyle',
                '.gitlab-ci.yml', 'my_python-job']
 ```
+
+#### Examples using `yaml2script` in a CI pipeline
 
 Or you can run `yaml2script` in a CI pipeline:
 
