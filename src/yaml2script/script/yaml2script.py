@@ -103,16 +103,18 @@ class _ReferenceClass:
                 if self.node.value[1].value in data[jobname]:
                     return_value = data[jobname][self.node.value[1].value]
                 else:
-                    return_value = [
-                        '# reference: job ' +
-                        f'"{self.node.value[0].value}" has no ' +
-                        f'"{self.node.value[1].value}" in this file']
+                    return_value = \
+                        '# reference: job ' + \
+                        f'"{self.node.value[0].value}" has no ' + \
+                        f'"{self.node.value[1].value}" in this file'
+                    warnings.warn(return_value)
             else:
-                return_value = [
-                    '# reference ' +
-                    f'[{self.node.value[0].value}, ' +
-                    f'{self.node.value[1].value}] not defined in this file']
-        return return_value
+                return_value = \
+                    '# reference ' + \
+                    f'[{self.node.value[0].value}, ' + \
+                    f'{self.node.value[1].value}] not defined in this file'\
+                warnings.warn(return_value)
+        return [return_value]
 
 
 def _construct_reference(loader, node):
