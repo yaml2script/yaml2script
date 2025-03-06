@@ -1,0 +1,11 @@
+include:
+  - remote: 'https://gitlab.com/deploy2zenodo/deploy2zenodo/-/releases/permalink/latest/downloads/deploy2zenodo.yaml'
+
+deploy_using_deploy2zenodo:
+  stage: deploy
+  rules:
+    - when: never
+  script:
+    - cat /etc/os-release
+    - !reference [deploy2zenodo, script]
+    - echo "DOI=$DOI"

@@ -23,6 +23,12 @@ functionality,
 allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
 files.
 
+Note: The support for the
+[`!reference` custom YAML tag](https://docs.gitlab.com/ci/yaml/yaml_optimization/#reference-tags)
+is limited.
+Specifically, references that span across files are not resolved.
+In such cases, it is recommended to manually analyze each file individually.
+
 see: [yaml2script’s documentation](https://yaml2script.gitlab.io/yaml2script/)
 
 ## Why is yaml2script useful?

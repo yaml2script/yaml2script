@@ -67,10 +67,63 @@ def run_version(args):
     return sys.exit(0)
 
 
-def _flatten_list(unflatten_list):
+class _GitlabSafeLoader(yaml.SafeLoader):  # pylint: disable=too-many-ancestors
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-25
+    :Date: 2025-03-06
+    :License: GPLv3+
+
+    small class to copy the yaml.SafeLoader to be editable
+    """
+
+
+class _ReferenceClass:
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-03-06
+    :License: GPLv3+
+
+    class to be a placeholder for the reference tag until it can be resolved
+    """
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, loader, node):
+        self.loader = loader
+        self.node = node
+
+    def __call__(self, data):
+        return_value = ''
+        if (hasattr(self.node, 'value') and
+            isinstance(self.node.value, list) and
+            (len(self.node.value) == 2) and
+            hasattr(self.node.value[0], 'value') and
+                hasattr(self.node.value[1], 'value')):
+            if self.node.value[0].value in data:
+                jobname = self.node.value[0].value
+                if self.node.value[1].value in data[jobname]:
+                    return_value = data[jobname][self.node.value[1].value]
+                else:
+                    return_value = [
+                        '# reference: job ' +
+                        f'"{self.node.value[0].value}" has no ' +
+                        f'"{self.node.value[1].value}" in this file']
+            else:
+                return_value = [
+                    '# reference ' +
+                    f'[{self.node.value[0].value}, ' +
+                    f'{self.node.value[1].value}] not defined in this file']
+        return return_value
+
+
+def _construct_reference(loader, node):
+    data = _ReferenceClass(loader, node)
+    return data
+
+
+def _flatten_list(unflatten_list, data):
+    """
+    :Author: Daniel Mohr
+    :Date: 2025-03-06
     :License: GPLv3+
 
     flatten the given list
@@ -78,16 +131,20 @@ def _flatten_list(unflatten_list):
     flatten_list = []
     for item in unflatten_list:
         if isinstance(item, list):
-            flatten_list.extend(_flatten_list(item))
+            flatten_list.extend(_flatten_list(item, data))
         else:
-            flatten_list.append(item)
+            if isinstance(item, _ReferenceClass):
+
+                flatten_list.extend(_flatten_list(item(data), data))
+            else:
+                flatten_list.append(item)
     return flatten_list
 
 
 def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-27
+    :Date: 2025-03-06
     :License: GPLv3+
 
     Extracts scripts from the specified filename and returns the script.
@@ -96,8 +153,9 @@ def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
     files.
     """
+    yaml.add_constructor('!reference', _construct_reference, _GitlabSafeLoader)
     with open(filename, encoding='utf8') as fide:
-        data = yaml.load(fide, Loader=yaml.SafeLoader)
+        data = yaml.load(fide, Loader=_GitlabSafeLoader)
     script = {}
     if 'extends' in data[jobname]:
         for key in ['before_script', 'script', 'after_script']:
@@ -115,7 +173,7 @@ def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     for key in ['before_script', 'script', 'after_script']:
         if key in script:
             script_code += script[key]
-    return list(map(str.strip, _flatten_list(script_code)))
+    return list(map(str.strip, _flatten_list(script_code, data)))
 
 
 def run_extract_script(args):
