@@ -346,7 +346,7 @@ ubuntu-latest-conda-miniforge-simple:
     - echo "$CONDA_PREFIX"
     - . ~/miniforge3/etc/profile.d/conda.sh
     - echo "$CONDA_PREFIX"
-    - ~/miniforge3/bin/activate -y -n yaml2script
+    - ~/miniforge3/bin/activate base
     - echo "$CONDA_PREFIX"
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
