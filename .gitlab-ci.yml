@@ -262,11 +262,11 @@ ubuntu-latest-conda-miniforge:
     # install conda-forge
     - curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
-    - cat ~/miniforge3/.condarc 
+    - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
     - . ~/.bashrc
     # install yaml2script
-    - pip3 install ".[shellcheck, pycodestyle, pylint]"
+    - pip3 install --root-user-action=ignore ".[shellcheck]"
     # very simple test
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
@@ -289,11 +289,11 @@ ubuntu-latest-conda-miniforge-simple:
     # install conda-forge
     - curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
-    - cat ~/miniforge3/.condarc 
+    - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
     - . ~/.bashrc
     # install yaml2script
-    - pip3 install ".[shellcheck, pycodestyle, pylint]"
+    - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
     # very simple test
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
