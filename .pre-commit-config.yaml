@@ -41,3 +41,4 @@ repos:
       - id: yaml2script-all
         additional_dependencies:
           - shellcheck-py
+        args: [-parameter_check_command=-e SC1090]
