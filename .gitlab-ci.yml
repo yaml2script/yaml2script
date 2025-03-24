@@ -324,7 +324,7 @@ ubuntu-latest-conda-miniforge:
     - pytest-3 --numprocesses=auto --cov=yaml2script --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
 
 ubuntu-latest-conda-miniforge-simple:
-  stage: build_test
+  stage: pre
   rules:
     - if: $CI_COMMIT_TAG
       when: never
