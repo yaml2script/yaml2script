@@ -340,7 +340,7 @@ ubuntu-latest-conda-miniforge-simple:
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
-    - . ~/.bashrc
+    - source ~/.bashrc
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
     # very simple test
