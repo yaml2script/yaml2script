@@ -248,7 +248,7 @@ debian-latest-conda-miniforge:
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
     # install pre-commit and pytest
-    - $APT_GET_INSTALL git pre-commit python3-pytest python3-pytest-xdist
+    - $APT_GET_INSTALL git pre-commit pycodestyle python3-pytest python3-pytest-xdist
     - pytest-3 --numprocesses=auto --verbose tests/main.py
 
 almalinux-latest-pipx:
@@ -316,12 +316,14 @@ ubuntu-latest-conda-miniforge:
     - export PATH="/root/miniforge3/bin:$PATH"
     - ~/miniforge3/bin/activate base
     # install yaml2script
-    - pip3 install --root-user-action=ignore ".[shellcheck]"
+    - pip3 install --root-user-action=ignore .
     # very simple test
     - yaml2script --help
-    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
-    # install pre-commit and pytest
-    - $APT_GET_INSTALL git pre-commit python3-pytest python3-pytest-cov python3-pytest-xdist
+    - if yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml; then exit 1; fi
+    # install test dependencies
+    - pip3 install --root-user-action=ignore ".[test]"
+    - $APT_GET_INSTALL git
+    # run tests
     - pytest-3 --numprocesses=auto --cov=yaml2script --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
 
 ubuntu-latest-conda-miniforge-simple:
