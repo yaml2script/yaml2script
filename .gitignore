@@ -4,3 +4,4 @@ docs/README.md
 docs/_build
 manual_yaml2script.pdf
 manual_yaml2script/
+__pycache__/

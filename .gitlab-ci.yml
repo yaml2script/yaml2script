@@ -19,18 +19,18 @@ stages:
     - cat /etc/os-release
 
 .test_pre-commit_yaml2script_check_01: &test_pre-commit_yaml2script_check_01
-    - git config --global init.defaultBranch main
-    - repo_dir="$(mktemp -d)"
-    - git clone --bare . "$repo_dir"
-    - (cd "$repo_dir" && git tag -f latest)
-    - tmp_dir="$(mktemp -d)"
-    - (cd "$tmp_dir" && git init)
-    - cp -p tests/data/01_pre-commit-config.yaml "$tmp_dir"/.pre-commit-config.yaml
-    - cp -p tests/data/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
-    - |
-      sed -i "s#repo: repo_dir#repo: $repo_dir#" "$tmp_dir"/.pre-commit-config.yaml
-    - (cd "$tmp_dir" && git add .)
-    - (cd "$tmp_dir" && pre-commit run --all-files)
+  - git config --global init.defaultBranch main
+  - repo_dir="$(mktemp -d)"
+  - git clone --bare . "$repo_dir"
+  - (cd "$repo_dir" && git tag -f latest)
+  - tmp_dir="$(mktemp -d)"
+  - (cd "$tmp_dir" && git init)
+  - cp -p tests/data/01_pre-commit-config.yaml "$tmp_dir"/.pre-commit-config.yaml
+  - cp -p tests/data/01_gitlab-ci.yaml "$tmp_dir"/.gitlab-ci.yml
+  - |
+    sed -i "s#repo: repo_dir#repo: $repo_dir#" "$tmp_dir"/.pre-commit-config.yaml
+  - (cd "$tmp_dir" && git add .)
+  - (cd "$tmp_dir" && pre-commit run --all-files)
 
 pre-commit:
   stage: pre
@@ -107,7 +107,7 @@ alpine-latest-pipx:
     - export PATH="$PATH":~/.local/bin
     - pipx install . shellcheck-py pycodestyle
     - yaml2script --help
-    - yaml2script all .gitlab-ci.yml
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest-3 --numprocesses=auto --verbose tests/main.py
     - pipx uninstall yaml2script
@@ -125,7 +125,7 @@ alpine-latest-pip:
     - apk add --no-cache git npm pre-commit py3-pip
     - pip3 install --break-system-packages ".[pycodestyle, shellcheck, test]"
     - yaml2script --help
-    - yaml2script all -verbose .gitlab-ci.yml
+    - yaml2script all -parameter_check_command="-e SC1090" -verbose .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest --numprocesses=auto --verbose tests/main.py
 
@@ -142,7 +142,7 @@ alpine-latest-pip-system-packages:
     - apk add --no-cache git npm pre-commit py3-pip py3-pycodestyle py3-pytest py3-pytest-xdist py3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
     - yaml2script --help
-    - yaml2script all .gitlab-ci.yml
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest-3 --numprocesses=auto --verbose tests/main.py
     - pip3 uninstall -y --break-system-packages yaml2script
@@ -164,7 +164,7 @@ debian-latest-pipx:
     - pipx install shellcheck-py
     - pipx install pycodestyle
     - yaml2script --help
-    - yaml2script all .gitlab-ci.yml
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest-3 --numprocesses=auto --verbose tests/main.py
     - pipx uninstall yaml2script
@@ -183,7 +183,7 @@ debian-latest-pip:
     - $APT_GET_INSTALL git npm pre-commit python3-pip
     - pip3 install --break-system-packages ".[pycodestyle, shellcheck, test]"
     - yaml2script --help
-    - yaml2script all -verbose .gitlab-ci.yml
+    - yaml2script all -parameter_check_command="-e SC1090" -verbose .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest --numprocesses=auto --verbose tests/main.py
 
@@ -201,7 +201,7 @@ debian-latest-pip-system-packages:
     - $APT_GET_INSTALL git npm pre-commit pycodestyle python3-pip python3-pytest python3-pytest-cov python3-pytest-xdist python3-yaml shellcheck
     - pip3 install --no-deps --break-system-packages .
     - yaml2script --help
-    - yaml2script all .gitlab-ci.yml
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
     - *test_pre-commit_yaml2script_check_01
     - pytest-3 --numprocesses=auto --cov=yaml2script --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
     - $APT_GET_INSTALL curl latexmk texlive-latex-extra texlive-latex-recommended make python3-recommonmark python3-sphinx python3-sphinx-argparse rsync tex-gyre
@@ -224,12 +224,139 @@ debian-latest-pip-system-packages:
         coverage_format: cobertura
         path: coverage.xml
 
+debian-latest-conda-miniforge:
+  stage: build_test
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
+  image:
+    name: debian:latest
+  extends: .display_env
+  script:
+    - apt-get update
+    - $APT_GET_INSTALL curl
+    # install conda-forge
+    - curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
+    - cat ~/miniforge3/.condarc
+    - ~/miniforge3/bin/conda init
+    - . ~/.bashrc
+    # install yaml2script
+    - pip3 install --root-user-action=ignore ".[shellcheck]"
+    # very simple test
+    - yaml2script --help
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
+    # install pre-commit and pytest
+    - $APT_GET_INSTALL git pre-commit pycodestyle python3-pytest python3-pytest-xdist
+    - pytest-3 --numprocesses=auto --verbose tests/main.py
+
+almalinux-latest-pipx:
+  stage: build_test
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
+  image:
+    name: almalinux:latest
+  extends: .display_env
+  script:
+    - dnf install epel-release -y
+    - dnf install -y git npm pipx python3-pytest python3-pytest-xdist
+    - export PATH="$PATH":~/.local/bin
+    - pipx install .
+    - pipx install shellcheck-py
+    - pipx install pycodestyle
+    - pipx install pre-commit
+    - yaml2script --help
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
+    - *test_pre-commit_yaml2script_check_01
+    - pytest-3 --numprocesses=auto --verbose tests/main.py
+    - pipx uninstall yaml2script
+
+ubuntu-latest-pipx:
+  stage: build_test
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
+  image:
+    name: ubuntu:latest
+  extends: .display_env
+  script:
+    - apt-get update
+    - $APT_GET_INSTALL git npm pipx pre-commit python3-pytest python3-pytest-xdist
+    - export PATH="$PATH":~/.local/bin
+    - pipx install .
+    - pipx install shellcheck-py
+    - pipx install pycodestyle
+    - yaml2script --help
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
+    - *test_pre-commit_yaml2script_check_01
+    - pytest-3 --numprocesses=auto --verbose tests/main.py
+    - pipx uninstall yaml2script
+
+ubuntu-latest-conda-miniforge:
+  stage: build_test
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
+  image:
+    name: ubuntu:latest
+  extends: .display_env
+  script:
+    - apt-get update
+    - $APT_GET_INSTALL curl
+    # install conda-forge
+    - curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
+    - cat ~/miniforge3/.condarc
+    - ~/miniforge3/bin/conda init
+    - export PATH="/root/miniforge3/bin:$PATH"
+    - ~/miniforge3/bin/activate base
+    # install yaml2script
+    - pip3 install --root-user-action=ignore .
+    # very simple test
+    - yaml2script --help
+    - if yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml; then exit 1; fi
+    # install test dependencies
+    - pip3 install --root-user-action=ignore ".[test]"
+    - $APT_GET_INSTALL git
+    # run tests
+    - pytest --numprocesses=auto --cov=yaml2script --cov-report=html:coverage_report/ --cov-report=term --cov-report=xml --verbose tests/main.py
+
+ubuntu-latest-conda-miniforge-simple:
+  stage: build_test
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
+  image:
+    name: ubuntu:latest
+  extends: .display_env
+  script:
+    - apt-get update
+    - $APT_GET_INSTALL curl
+    # install conda-forge
+    - curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
+    - cat ~/miniforge3/.condarc
+    - ~/miniforge3/bin/conda init
+    - export PATH="/root/miniforge3/bin:$PATH"
+    - ~/miniforge3/bin/activate base
+    # install yaml2script
+    - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
+    # very simple test
+    - yaml2script --help
+    - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
+
 release_job:
   stage: create_release
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
   image:
     # https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html#create-release-metadata-in-a-custom-script
     registry.gitlab.com/gitlab-org/release-cli:latest
@@ -257,7 +384,7 @@ trigger_check_release:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA
@@ -295,7 +422,7 @@ trigger_deploy2zenodo:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA
