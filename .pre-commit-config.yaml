@@ -32,11 +32,11 @@ repos:
     hooks:
       - id: markdownlint
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.35.1
+    rev: v1.37.0
     hooks:
       - id: yamllint
   - repo: https://gitlab.com/yaml2script/yaml2script
-    rev: 0.1.4
+    rev: 0.1.5
     hooks:
       - id: yaml2script-all
         additional_dependencies:
