@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yaml2script"
-version = "0.2.0"
+version = "0.2.1"
 authors = [{name="Daniel Mohr", email="daniel.mohr@uni-greifswald.de"}]
 description = "`yaml2script` extracts the scripts from a '.gitlab-ci.yml' file."
 keywords=["yaml2script"]
@@ -27,3 +27,6 @@ test = ["pre-commit", "pycodestyle", "pytest", "pytest-cov", "pytest-xdist", "sh
 
 [tool.ruff.lint.per-file-ignores]
 "docs/conf.py" = ["F401"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]

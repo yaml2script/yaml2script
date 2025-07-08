@@ -43,7 +43,7 @@ import importlib
 import json
 import os
 import re
-import subprocess
+import subprocess  # nosec B404
 import sys
 import tempfile
 import warnings
@@ -157,7 +157,7 @@ def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
     yaml.add_constructor('!reference', _construct_reference, _GitlabSafeLoader)
     with open(filename, encoding='utf8') as fide:
-        data = yaml.load(fide, Loader=_GitlabSafeLoader)
+        data = yaml.load(fide, Loader=_GitlabSafeLoader)  # nosec B506
     script = {}
     if 'extends' in data[jobname]:
         for key in ['before_script', 'script', 'after_script']:
@@ -195,13 +195,15 @@ def _run_check_script(
         shebang='#!/usr/bin/env sh', verbose=False, quiet=False):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-28
+    :Date: 2025-07-08
     :License: GPLv3+
     """
     # pylint: disable=too-many-arguments
-    parameter_check_command = tuple(filter(None, parameter_check_command))
-    if len(parameter_check_command) >= 1:
-        check_command += " " + ' '.join(parameter_check_command)
+    pre_parameter_check_command = list(filter(None, parameter_check_command))
+    parameter_check_command = []
+    for item in pre_parameter_check_command:
+        parameter_check_command += item.split(' ')
+    check_command = [check_command] + parameter_check_command
     returncode = 0
     with tempfile.TemporaryDirectory() as tmpdir:
         for jobname in all_jobnames:
@@ -213,13 +215,13 @@ def _run_check_script(
             with open(scriptfilename, 'w', encoding='utf8') as fide:
                 fide.write(script_code + os.linesep)
                 fide.flush()
-            cmd = check_command + " " + scriptfilename
+            cmd = check_command + [scriptfilename]
             if verbose:
                 print('run', cmd)
-            cpi = subprocess.run(
+            cpi = subprocess.run(  # nosec B603
                 cmd,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                shell=True, cwd=tmpdir, check=False)
+                cwd=tmpdir, check=False)
             returncode += cpi.returncode
             if not quiet:
                 if cpi.stdout.decode():

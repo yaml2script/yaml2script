@@ -1,6 +1,6 @@
 ---
 author: Daniel Mohr
-date: 2025-03-27
+date: 2025-07-08
 license: GPL-3.0-or-later
 home: https://gitlab.com/yaml2script/yaml2script
 mirror: https://github.com/yaml2script/yaml2script
@@ -14,7 +14,7 @@ doi: https://doi.org/10.5281/zenodo.14962489
 `yaml2script` is a [Python](https://www.python.org/) script that
 extracts shell scripts from a
 [GitLab CI/CD configuration](https://docs.gitlab.com/development/cicd/)
-file `.gitlab-ci.yml` and allows you to test/analyze them with tools like
+file `.gitlab-ci.yml` and allows you to test/analyze/check them with tools like
 [shellcheck](https://www.shellcheck.net/).
 
 It correctly handles [YAML anchors](https://docs.gitlab.com/ci/yaml/yaml_optimization/#yaml-anchors-for-scripts)
@@ -294,7 +294,7 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2025-03-27
+Date: 2025-07-08
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 
