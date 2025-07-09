@@ -198,7 +198,7 @@ def _run_check_script(
     :Date: 2025-07-08
     :License: GPLv3+
     """
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-arguments,too-many-locals
     pre_parameter_check_command = list(filter(None, parameter_check_command))
     parameter_check_command = []
     for item in pre_parameter_check_command:
