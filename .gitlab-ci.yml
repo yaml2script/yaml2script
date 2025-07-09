@@ -46,7 +46,7 @@ pre-commit:
     - pre-commit --version
     # ignore file, it's a deliberate error test case
     - rm tests/data/03_extract_ruff
-    - pre-commit run --all-files
+    - pre-commit run --all-files --show-diff-on-failure
 
 pycodestyle:
   stage: pre
