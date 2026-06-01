@@ -18,7 +18,7 @@
 
 import importlib.metadata
 
-from recommonmark.parser import CommonMarkParser  # pylint: disable=W0611
+from recommonmark.parser import CommonMarkParser  # pylint: disable=W0611,E0401
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -29,7 +29,7 @@ source_suffix = {
 # -- Project information -----------------------------------------------------
 
 project = 'yaml2script'
-copyright = '2024-2025, Daniel Mohr'  # pylint: disable=redefined-builtin
+copyright = '2024-2026, Daniel Mohr'  # pylint: disable=redefined-builtin
 author = 'Daniel Mohr'
 
 # The full version, including alpha/beta/rc tags

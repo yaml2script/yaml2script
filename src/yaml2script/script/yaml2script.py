@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2024-2025 Daniel Mohr
+# SPDX-FileCopyrightText: 2024-2026 Daniel Mohr
 #
 # yaml2script extracts the scripts from a '.gitlab-ci.yml' file.
-# Copyright (C) 2024-2025 Daniel Mohr
+# Copyright (C) 2024-2026 Daniel Mohr
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ import sys
 import tempfile
 import warnings
 
-import yaml
+import yaml  # pylint: disable=import-error
 
 
 def run_version(args):
@@ -67,7 +67,8 @@ def run_version(args):
     return sys.exit(0)
 
 
-class _GitlabSafeLoader(yaml.SafeLoader):  # pylint: disable=too-many-ancestors
+class _GitlabSafeLoader(yaml.SafeLoader):
+    # pylint: disable=too-many-ancestors, too-few-public-methods
     """
     :Author: Daniel Mohr
     :Date: 2025-03-06
@@ -250,24 +251,30 @@ def run_check_script(args):
 def run_check_all_scripts(args):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-25
+    :Date: 2026-06-01
     :License: GPLv3+
     """
-    with open(args.filename[0], encoding='utf8') as fide:
-        lines = fide.read()
-    jobnames = tuple(
-        map(str.strip,
-            re.findall(r'^([^ ]+):$', lines, re.MULTILINE)))
-    return _run_check_script(
-        args.filename[0], jobnames, args.check_command[0],
-        args.parameter_check_command,
-        shebang=args.shebang[0], verbose=args.verbose, quiet=args.quiet)
+    for filename in args.filename:
+        if args.verbose:
+            print(f'handle "{filename}"')
+        with open(filename, encoding='utf8') as fide:
+            lines = fide.read()
+        jobnames = tuple(
+            map(str.strip,
+                re.findall(r'^([^ ]+):$', lines, re.MULTILINE)))
+        returncode = _run_check_script(
+            filename, jobnames, args.check_command[0],
+            args.parameter_check_command,
+            shebang=args.shebang[0], verbose=args.verbose, quiet=args.quiet)
+        if returncode:
+            break
+    return returncode
 
 
 def _my_argument_parser():
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-27
+    :Date: 2026-01-01
     :License: GPLv3+
     """
     preepilog = "Examples:" + 2 * os.linesep
@@ -315,7 +322,7 @@ def _my_argument_parser():
         dest='json',
         help='Output as json all metadata. '
         'If "-only_number" is set, no json ouput will be done. '
-        'Example to get onlye the version: '
+        'Example to get only the version: '
         'yaml2script version -j | jq .Version')
     # subparser extract_script
     parser_extract_script = subparsers.add_parser(
@@ -426,9 +433,9 @@ def _my_argument_parser():
     parser_check_all_scripts.set_defaults(func=run_check_all_scripts)
     parser_check_all_scripts.add_argument(
         'filename',
-        nargs=1,
+        nargs='+',
         type=str,
-        help='From this filename the script(s) will be extracted.')
+        help='From this/these filenames the script(s) will be extracted.')
     parser_check_all_scripts.add_argument(
         '-shebang',
         nargs=1,

@@ -118,7 +118,7 @@ pipx install --system-site-packages \
              and prints them to stdout.
 * `check`: Checks scripts from the specified `.gitlab-ci.yml` file
            using a tool like `shellcheck`.
-* `all`: Checks all scripts from the specified `.gitlab-ci.yml` file
+* `all`: Checks all scripts from the specified `.gitlab-ci.yml` file(s)
          using a tool like `shellcheck`.
 
 Please see the help output or
@@ -294,11 +294,11 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2025-07-08
+Date: 2026-06-01
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 
-Copyright (C) 2024-2025 Daniel Mohr
+Copyright (C) 2024-2026 Daniel Mohr
 
 This tool was derived from
 [yaml2script.py](https://gitlab.com/deploy2zenodo/deploy2zenodo/-/blob/3c9b1eb502ace2fe0cf045e7c6632a2eb4b97bb5/yaml2script.py)
