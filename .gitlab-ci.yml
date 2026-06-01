@@ -47,7 +47,7 @@ pre-commit:
     # ignore file, it's a deliberate error test case
     - rm tests/data/03_extract_ruff
     - pre-commit run --all-files --show-diff-on-failure
-    - pre-commit autoupdate --jobs $((($(nproc) * 3 + 2 - 1)/2))
+    - pre-commit autoupdate --jobs 0
     - git diff .pre-commit-config.yaml
 
 pycodestyle:
