@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2024-2025 Daniel Mohr
+# SPDX-FileCopyrightText: 2024-2026 Daniel Mohr
 #
 # yaml2script extracts the scripts from a '.gitlab-ci.yml' file.
-# Copyright (C) 2024-2025 Daniel Mohr
+# Copyright (C) 2024-2026 Daniel Mohr
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ import sys
 import tempfile
 import warnings
 
-import yaml
+import yaml  # pylint: disable=import-error
 
 
 def run_version(args):
@@ -67,7 +67,8 @@ def run_version(args):
     return sys.exit(0)
 
 
-class _GitlabSafeLoader(yaml.SafeLoader):  # pylint: disable=too-many-ancestors
+class _GitlabSafeLoader(yaml.SafeLoader):
+    # pylint: disable=too-many-ancestors, too-few-public-methods
     """
     :Author: Daniel Mohr
     :Date: 2025-03-06
@@ -273,7 +274,7 @@ def run_check_all_scripts(args):
 def _my_argument_parser():
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-27
+    :Date: 2026-01-01
     :License: GPLv3+
     """
     preepilog = "Examples:" + 2 * os.linesep

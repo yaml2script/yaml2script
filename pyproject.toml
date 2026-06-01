@@ -30,3 +30,8 @@ test = ["pre-commit", "pycodestyle", "pytest", "pytest-cov", "pytest-xdist", "sh
 
 [tool.bandit]
 exclude_dirs = ["tests"]
+
+[tool.pylint.'MASTER']
+# Files or directories matching the regex patterns are skipped. The regex
+# matches against base names, not paths.
+ignore-paths="tests/data/"
