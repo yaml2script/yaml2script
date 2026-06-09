@@ -1,6 +1,6 @@
 ---
 author: Daniel Mohr
-date: 2025-07-08
+date: 2026-06-09
 license: GPL-3.0-or-later
 home: https://gitlab.com/yaml2script/yaml2script
 mirror: https://github.com/yaml2script/yaml2script
@@ -294,7 +294,7 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2026-06-01
+Date: 2026-06-09
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 
