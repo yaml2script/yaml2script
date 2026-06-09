@@ -20,6 +20,7 @@ Or you can run only one test, e. g.::
   pytest-3 -k TestScriptsExecutable main.py
 """
 
+import importlib
 import importlib.metadata
 import json
 import os
@@ -38,6 +39,14 @@ class TestModule(unittest.TestCase):
     env python3 main.py TestModule
     pytest-3 -k TestModule main.py
     """
+    @classmethod
+    def setUpClass(cls):
+        # pylint: disable = import-outside-toplevel
+        try:
+            cls.y2s_module = importlib.import_module(
+                'yaml2script.script.yaml2script')
+        except ImportError:
+            cls.y2s_module = None
 
     def test_flatten_list(self):
         """
@@ -48,9 +57,16 @@ class TestModule(unittest.TestCase):
 
         env python3 main.py TestModule.test_flatten_list
         """
-        # pylint: disable = import-outside-toplevel
-        from yaml2script.script.yaml2script import (_flatten_list,
-                                                    _ReferenceClass)
+        if self.y2s_module is None:
+            # skip test in `pipx` installation
+            self.skipTest(
+                "yaml2script module not importable in current environment")
+
+        # pylint: disable = protected-access
+        _flatten_list = self.y2s_module._flatten_list
+        _ReferenceClass = \
+            self.y2s_module._ReferenceClass  # pylint: disable = invalid-name
+
         # simple nested list
         nested_list = [1, [2, 3], [4, [5, 6]]]
         expected = [1, 2, 3, 4, 5, 6]
@@ -74,12 +90,20 @@ class TestModule(unittest.TestCase):
 
         env python3 main.py TestModule.test_flatten_list_missing_reference
         """
+        if self.y2s_module is None:
+            # skip test in `pipx` installation
+            self.skipTest(
+                "yaml2script module not importable in current environment")
+
         # pylint: disable = import-outside-toplevel
         import warnings
         from unittest.mock import MagicMock, Mock
 
-        from yaml2script.script.yaml2script import (_flatten_list,
-                                                    _ReferenceClass)
+        # pylint: disable = protected-access
+        _flatten_list = self.y2s_module._flatten_list
+        _ReferenceClass = \
+            self.y2s_module._ReferenceClass  # pylint: disable = invalid-name
+
         mock_node = MagicMock()
         mock_val_0 = Mock()
         mock_val_0.value = 'job1'
@@ -107,12 +131,20 @@ class TestModule(unittest.TestCase):
 
         env python3 main.py TestModule.test_flatten_list_job_missing
         """
+        if self.y2s_module is None:
+            # skip test in `pipx` installation
+            self.skipTest(
+                "yaml2script module not importable in current environment")
+
         # pylint: disable = import-outside-toplevel
         import warnings
         from unittest.mock import MagicMock, Mock
 
-        from yaml2script.script.yaml2script import (_flatten_list,
-                                                    _ReferenceClass)
+        # pylint: disable = protected-access
+        _flatten_list = self.y2s_module._flatten_list
+        _ReferenceClass = \
+            self.y2s_module._ReferenceClass  # pylint: disable = invalid-name
+
         mock_node = MagicMock()
         mock_val_0 = Mock()
         mock_val_0.value = 'job1'
@@ -141,8 +173,14 @@ class TestModule(unittest.TestCase):
 
         env python3 main.py TestModule.test_read_yaml
         """
-        # pylint: disable = import-outside-toplevel
-        from yaml2script.script.yaml2script import _read_yaml
+        if self.y2s_module is None:
+            # skip test in `pipx` installation
+            self.skipTest(
+                "yaml2script module not importable in current environment")
+
+        # pylint: disable = protected-access
+        _read_yaml = self.y2s_module._read_yaml
+
         # test successful YAML reading
         filename = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
