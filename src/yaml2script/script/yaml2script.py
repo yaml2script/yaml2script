@@ -142,6 +142,7 @@ def _flatten_list(unflatten_list, data):
                 flatten_list.append(item)
     return flatten_list
 
+
 def _read_yaml(filename):
     """
     :Author: Daniel Mohr
@@ -163,6 +164,7 @@ def _read_yaml(filename):
         except yaml.YAMLError as exc:
             raise ValueError(f"invalid YAML in '{filename}': {exc}") from exc
     return data if data is not None else {}
+
 
 def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
