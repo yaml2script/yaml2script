@@ -13,6 +13,9 @@ You can run this file directly::
 
 Or you can run only one test, e. g.::
 
+  env python3 main.py TestModule
+  pytest-3 -k TestModule main.py
+
   env python3 main.py TestScriptsExecutable
   pytest-3 -k TestScriptsExecutable main.py
 """
@@ -27,10 +30,69 @@ import tempfile
 import unittest
 
 
+class TestModule(unittest.TestCase):
+    """
+    :Author: Daniel Mohr
+    :Date: 2026-06-09
+
+    env python3 main.py TestModule
+    pytest-3 -k TestModule main.py
+    """
+
+    def test_flatten_list(self):
+        """
+        simple test for `_flatten_list`
+
+        :Author: Daniel Mohr
+        :Date: 2026-06-09
+
+        env python3 main.py TestModule.test_flatten_list
+        """
+        from yaml2script.script.yaml2script import (_flatten_list,
+                                                    _ReferenceClass)
+        # simple nested list
+        nested_list = [1, [2, 3], [4, [5, 6]]]
+        expected = [1, 2, 3, 4, 5, 6]
+        self.assertEqual(_flatten_list(nested_list, {}), expected)
+        # empty list
+        self.assertEqual(_flatten_list([], {}), [])
+        # flat list
+        flat_list = [1, 2, 3, 4]
+        self.assertEqual(_flatten_list(flat_list, {}), flat_list)
+
+    def test_read_yaml(self):
+        """
+        test `_read_yaml`
+
+        :Author: Daniel Mohr
+        :Date: 2026-06-09
+
+        env python3 main.py TestModule.test_read_yaml
+        """
+        from yaml2script.script.yaml2script import _read_yaml
+        # test successful YAML reading
+        filename = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'data/04_pre-commit-config.yaml')
+        data = _read_yaml(filename)
+        self.assertIsInstance(data, dict)
+        self.assertIn('repos', data)
+        self.assertEqual(len(data['repos']), 1)
+        self.assertEqual(data['repos'][0]['repo'], 'repo_dir')
+
+        # test reading non-YAML file (should raise ValueError)
+        with self.assertRaises(FileNotFoundError):
+            _read_yaml('foo')
+
+        # Test reading another non-YAML file (should raise ValueError)
+        with self.assertRaises(ValueError):
+            _read_yaml('main.py')
+
+
 class TestScriptsExecutable(unittest.TestCase):
     """
     :Author: Daniel Mohr
-    :Date: 2025-02-27
+    :Date: 2026-06-09
 
     env python3 main.py TestScriptsExecutable
     pytest-3 -k TestScriptsExecutable main.py
@@ -647,7 +709,7 @@ class TestScriptsExecutable(unittest.TestCase):
 
     def test_yaml2script_all_06(self):
         """
-        yaml2script all 02
+        yaml2script all 06
 
         test if yaml2script correctly handles hidden jobs and
         document markers (---/...).
@@ -669,6 +731,32 @@ class TestScriptsExecutable(unittest.TestCase):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
+
+    def test_yaml2script_extract_06(self):
+        """
+        yaml2script all 06
+
+        test if yaml2script raises a clear error for invalid jobnames
+
+        :Author: Daniel Mohr
+        :Date: 2026-06-09
+
+        env python3 main.py \
+          TestScriptsExecutable.test_yaml2script_extract_06
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/06_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            cpi = subprocess.run(
+                "yaml2script extract .gitlab-ci.yml invalid_job",
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=False)
+            self.assertEqual(cpi.returncode, 1)
+            self.assertIn("job 'invalid_job' not found", cpi.stderr.decode())
 
 
 if __name__ == '__main__':
