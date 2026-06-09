@@ -48,6 +48,7 @@ class TestModule(unittest.TestCase):
 
         env python3 main.py TestModule.test_flatten_list
         """
+        # pylint: disable = import-outside-toplevel
         from yaml2script.script.yaml2script import (_flatten_list,
                                                     _ReferenceClass)
         # simple nested list
@@ -59,6 +60,76 @@ class TestModule(unittest.TestCase):
         # flat list
         flat_list = [1, 2, 3, 4]
         self.assertEqual(_flatten_list(flat_list, {}), flat_list)
+        # simple reference class
+        ref_list = [1, _ReferenceClass(None, None), 4]
+        expected = [1, '', 4]
+        self.assertEqual(_flatten_list(ref_list, {}), expected)
+
+    def test_flatten_list_missing_reference(self):
+        """
+        test for `_flatten_list` (missing reference)
+
+        :Author: Daniel Mohr
+        :Date: 2026-06-09
+
+        env python3 main.py TestModule.test_flatten_list_missing_reference
+        """
+        # pylint: disable = import-outside-toplevel
+        import warnings
+        from unittest.mock import MagicMock, Mock
+
+        from yaml2script.script.yaml2script import (_flatten_list,
+                                                    _ReferenceClass)
+        mock_node = MagicMock()
+        mock_val_0 = Mock()
+        mock_val_0.value = 'job1'
+        mock_val_1 = Mock()
+        mock_val_1.value = 'setting1'
+        mock_node.value = [mock_val_0, mock_val_1]
+        ref_instance = _ReferenceClass(loader=None, node=mock_node)
+        test_list = [ref_instance]
+        data = {}
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            result = _flatten_list(test_list, data)
+            self.assertEqual(len(w), 1)
+            self.assertIn(
+                '[job1, setting1] not defined in this file', str(w[0].message))
+        expected_msg = '# reference [job1, setting1] not defined in this file'
+        self.assertEqual(result, [expected_msg])
+
+    def test_flatten_list_job_missing(self):
+        """
+        test for `_flatten_list` (missing job)
+
+        :Author: Daniel Mohr
+        :Date: 2026-06-09
+
+        env python3 main.py TestModule.test_flatten_list_job_missing
+        """
+        # pylint: disable = import-outside-toplevel
+        import warnings
+        from unittest.mock import MagicMock, Mock
+
+        from yaml2script.script.yaml2script import (_flatten_list,
+                                                    _ReferenceClass)
+        mock_node = MagicMock()
+        mock_val_0 = Mock()
+        mock_val_0.value = 'job1'
+        mock_val_1 = Mock()
+        mock_val_1.value = 'missing_key'
+        mock_node.value = [mock_val_0, mock_val_1]
+        ref_instance = _ReferenceClass(loader=None, node=mock_node)
+        test_list = [ref_instance]
+        data = {'job1': {'other_key': 'value'}}
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            result = _flatten_list(test_list, data)
+            self.assertEqual(len(w), 1)
+            self.assertIn(
+                '"job1" has no "missing_key" in this file', str(w[0].message))
+        expected_msg = '# reference: job "job1" has no "missing_key" in this file'
+        self.assertEqual(result, [expected_msg])
 
     def test_read_yaml(self):
         """
@@ -69,6 +140,7 @@ class TestModule(unittest.TestCase):
 
         env python3 main.py TestModule.test_read_yaml
         """
+        # pylint: disable = import-outside-toplevel
         from yaml2script.script.yaml2script import _read_yaml
         # test successful YAML reading
         filename = os.path.join(
@@ -90,6 +162,7 @@ class TestModule(unittest.TestCase):
 
 
 class TestScriptsExecutable(unittest.TestCase):
+    # pylint: disable = too-many-public-methods
     """
     :Author: Daniel Mohr
     :Date: 2026-06-09
