@@ -1,7 +1,7 @@
 .. only:: html
 
-	  test coverage report
-	  ====================
+          test coverage report
+          ====================
 
-	  .. raw:: html
-		   :file: index.html
+          .. raw:: html
+                   :file: index.html

@@ -36,7 +36,7 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://gitlab.com/yaml2script/yaml2script
-    rev: 0.2.1
+    rev: 0.2.2
     hooks:
       - id: yaml2script-all
         additional_dependencies:
@@ -52,6 +52,10 @@ repos:
     hooks:
       - id: pylint
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.13
+    rev: v0.15.16
     hooks:
       - id: ruff-check
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.6
+    hooks:
+      - id: forbid-tabs

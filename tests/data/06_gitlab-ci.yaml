@@ -1,0 +1,14 @@
+---
+# test file with yaml document start and stop marker
+# (was intepreted as job,
+# but fixed with efadcf3dfa3e9cd9c6f8e433f48fc701af3d9abd)
+
+.template:
+  before_script:
+    - echo "hello from before_script"
+
+job1:
+  extends: .template
+  script:
+    - echo "hello from job1"
+...

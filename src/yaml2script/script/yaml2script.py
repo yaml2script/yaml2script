@@ -35,14 +35,13 @@ shellcheck_.gitlab-ci.yml:
 
 :Author: Daniel Mohr
 :License: GPLv3+
-:Copyright: (C) 2024-2025 Daniel Mohr
+:Copyright: (C) 2024-2026 Daniel Mohr
 """
 
 import argparse
 import importlib
 import json
 import os
-import re
 import subprocess  # nosec B404
 import sys
 import tempfile
@@ -144,10 +143,33 @@ def _flatten_list(unflatten_list, data):
     return flatten_list
 
 
+def _read_yaml(filename):
+    """
+    :Author: Daniel Mohr
+    :Date: 2026-06-09
+    :License: GPLv3+
+
+    Reads a YAML file and returns its content as a dictionary.
+
+    Raises:
+        ValueError: If the YAML file is invalid.
+    """
+    if not hasattr(_GitlabSafeLoader, 'reference_constructor_added'):
+        yaml.add_constructor(
+            '!reference', _construct_reference, _GitlabSafeLoader)
+        _GitlabSafeLoader.reference_constructor_added = True
+    with open(filename, encoding='utf8') as fide:
+        try:
+            data = yaml.load(fide, Loader=_GitlabSafeLoader)  # nosec B506
+        except yaml.YAMLError as exc:
+            raise ValueError(f"invalid YAML in '{filename}': {exc}") from exc
+    return data if data is not None else {}
+
+
 def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     """
     :Author: Daniel Mohr
-    :Date: 2025-03-06
+    :Date: 2026-06-09
     :License: GPLv3+
 
     Extracts scripts from the specified filename and returns the script.
@@ -155,10 +177,13 @@ def extract_script(filename, jobname, *, shebang='#!/usr/bin/env sh'):
     It correctly handles YAML anchors and GitLab CI's 'extends' functionality,
     allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
     files.
+
+    Raises:
+        ValueError: if jobname does not exist in the YAML file
     """
-    yaml.add_constructor('!reference', _construct_reference, _GitlabSafeLoader)
-    with open(filename, encoding='utf8') as fide:
-        data = yaml.load(fide, Loader=_GitlabSafeLoader)  # nosec B506
+    data = _read_yaml(filename)
+    if jobname not in data:
+        raise ValueError(f"job '{jobname}' not found in '{filename}'")
     script = {}
     if 'extends' in data[jobname]:
         for key in ['before_script', 'script', 'after_script']:
@@ -251,17 +276,16 @@ def run_check_script(args):
 def run_check_all_scripts(args):
     """
     :Author: Daniel Mohr
-    :Date: 2026-06-01
+    :Date: 2026-06-09
     :License: GPLv3+
     """
     for filename in args.filename:
         if args.verbose:
             print(f'handle "{filename}"')
-        with open(filename, encoding='utf8') as fide:
-            lines = fide.read()
-        jobnames = tuple(
-            map(str.strip,
-                re.findall(r'^([^ ]+):$', lines, re.MULTILINE)))
+        data = _read_yaml(filename)
+        jobnames = list(data.keys())
+        if not jobnames:
+            warnings.warn(f"no valid jobs found in '{filename}'")
         returncode = _run_check_script(
             filename, jobnames, args.check_command[0],
             args.parameter_check_command,
