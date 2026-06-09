@@ -128,7 +128,8 @@ class TestModule(unittest.TestCase):
             self.assertEqual(len(w), 1)
             self.assertIn(
                 '"job1" has no "missing_key" in this file', str(w[0].message))
-        expected_msg = '# reference: job "job1" has no "missing_key" in this file'
+        expected_msg = \
+            '# reference: job "job1" has no "missing_key" in this file'
         self.assertEqual(result, [expected_msg])
 
     def test_read_yaml(self):
