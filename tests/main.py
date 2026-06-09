@@ -157,9 +157,12 @@ class TestModule(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             _read_yaml('foo')
 
-        # Test reading another non-YAML file (should raise ValueError)
+        # test reading another non-YAML file (should raise ValueError)
+        filename = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'main.py')
         with self.assertRaises(ValueError):
-            _read_yaml('main.py')
+            _read_yaml(filename)
 
 
 class TestScriptsExecutable(unittest.TestCase):
