@@ -29,6 +29,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import MagicMock, Mock
 
 
 class TestModule(unittest.TestCase):
@@ -95,10 +96,6 @@ class TestModule(unittest.TestCase):
             self.skipTest(
                 "yaml2script module not importable in current environment")
 
-        # pylint: disable = import-outside-toplevel
-        import warnings
-        from unittest.mock import MagicMock, Mock
-
         # pylint: disable = protected-access
         _flatten_list = self.y2s_module._flatten_list
         _ReferenceClass = \
@@ -113,14 +110,10 @@ class TestModule(unittest.TestCase):
         ref_instance = _ReferenceClass(loader=None, node=mock_node)
         test_list = [ref_instance]
         data = {}
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            result = _flatten_list(test_list, data)
-            self.assertEqual(len(w), 1)
-            self.assertIn(
-                '[job1, setting1] not defined in this file', str(w[0].message))
         expected_msg = '# reference [job1, setting1] not defined in this file'
-        self.assertEqual(result, [expected_msg])
+        with self.assertWarnsRegex(UserWarning, re.escape(expected_msg)):
+            result = _flatten_list(test_list, data)
+            self.assertEqual(result, [expected_msg])
 
     def test_flatten_list_job_missing(self):
         """
@@ -136,10 +129,6 @@ class TestModule(unittest.TestCase):
             self.skipTest(
                 "yaml2script module not importable in current environment")
 
-        # pylint: disable = import-outside-toplevel
-        import warnings
-        from unittest.mock import MagicMock, Mock
-
         # pylint: disable = protected-access
         _flatten_list = self.y2s_module._flatten_list
         _ReferenceClass = \
@@ -154,15 +143,11 @@ class TestModule(unittest.TestCase):
         ref_instance = _ReferenceClass(loader=None, node=mock_node)
         test_list = [ref_instance]
         data = {'job1': {'other_key': 'value'}}
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            result = _flatten_list(test_list, data)
-            self.assertEqual(len(w), 1)
-            self.assertIn(
-                '"job1" has no "missing_key" in this file', str(w[0].message))
         expected_msg = \
             '# reference: job "job1" has no "missing_key" in this file'
-        self.assertEqual(result, [expected_msg])
+        with self.assertWarnsRegex(UserWarning, re.escape(expected_msg)):
+            result = _flatten_list(test_list, data)
+            self.assertEqual(result, [expected_msg])
 
     def test_read_yaml(self):
         """
