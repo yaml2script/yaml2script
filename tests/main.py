@@ -1,7 +1,7 @@
 """
 :Author: Daniel Mohr
 :Email: daniel.mohr@uni-greifswald.de
-:Date: 2025-02-28
+:Date: 2026-06-09
 :License: GPL-3.0-or-later
 
 aggregation of tests
@@ -644,6 +644,31 @@ class TestScriptsExecutable(unittest.TestCase):
                         shell=True, cwd=tmpdir,
                         timeout=10*self.subprocess_timeout,
                         check=True)
+
+    def test_yaml2script_all_06(self):
+        """
+        yaml2script all 02
+
+        test if yaml2script correctly handles hidden jobs and
+        document markers (---/...).
+
+        :Author: Daniel Mohr
+        :Date: 2026-06-09
+
+        env python3 main.py \
+          TestScriptsExecutable.test_yaml2script_all_06
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/06_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            subprocess.run(
+                "yaml2script all .gitlab-ci.yml",
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=True)
 
 
 if __name__ == '__main__':
