@@ -207,7 +207,6 @@ please replace `rev: latest` with the version you intend to use.
 The value latest is only a placeholder in this README and
 can not be used directly (not existing).
 
-
 With this configuration, for example, the following YAML file would be tested
 for errors.
 
