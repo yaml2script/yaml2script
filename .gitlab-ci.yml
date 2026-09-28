@@ -44,8 +44,6 @@ pre-commit:
   script:
     - apk add --no-cache git npm pre-commit
     - pre-commit --version
-    # ignore file, it's a deliberate error test case
-    - rm tests/data/03_extract_ruff
     - pre-commit run --all-files --show-diff-on-failure
     - |
       VERSION=$(awk -F'"' '/^\s*version\s*=\s*"/ {print $2; exit}' pyproject.toml)

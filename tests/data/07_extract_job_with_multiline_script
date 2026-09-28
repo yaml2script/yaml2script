@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
+echo "TEMP_DIR: ${TEMP_DIR}"
+echo "TEMP_DIR=$: ${TEMP_DIR}"

@@ -1,7 +1,7 @@
 """
 :Author: Daniel Mohr
 :Email: daniel.mohr@uni-greifswald.de
-:Date: 2026-06-09
+:Date: 2026-09-28
 :License: GPL-3.0-or-later
 
 aggregation of tests
@@ -35,7 +35,7 @@ from unittest.mock import MagicMock, Mock
 class TestModule(unittest.TestCase):
     """
     :Author: Daniel Mohr
-    :Date: 2026-06-09
+    :Date: 2026-09-28
 
     env python3 main.py TestModule
     pytest-3 -k TestModule main.py
@@ -211,7 +211,7 @@ class TestScriptsExecutable(unittest.TestCase):
         """
         cpi = subprocess.run(
             "yaml2script",
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True,
             shell=True, timeout=self.subprocess_timeout, check=False)
         with self.assertRaises(subprocess.CalledProcessError):
             # parameter is necessary
@@ -229,7 +229,7 @@ class TestScriptsExecutable(unittest.TestCase):
         """
         cpi = subprocess.run(
             "yaml2script -h",
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True,
             shell=True, timeout=self.subprocess_timeout, check=True)
         self.assertTrue(
             cpi.stdout.strip().decode().endswith(
@@ -248,7 +248,7 @@ class TestScriptsExecutable(unittest.TestCase):
         """
         cpi = subprocess.run(
             "yaml2script version",
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True,
             shell=True, timeout=self.subprocess_timeout, check=True)
         try:
             version = importlib.metadata.version('yaml2script')
@@ -263,13 +263,13 @@ class TestScriptsExecutable(unittest.TestCase):
                              f'yaml2script version {version}')
         cpi = subprocess.run(
             "yaml2script version -o",
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True,
             shell=True, timeout=self.subprocess_timeout, check=True)
         if version is not None:
             self.assertEqual(cpi.stdout.strip().decode(), version)
         cpi = subprocess.run(
             "yaml2script version -json",
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            capture_output=True,
             shell=True, timeout=self.subprocess_timeout, check=True)
         data = json.loads(cpi.stdout.decode())
         self.assertEqual(data["Name"], "yaml2script")
@@ -294,7 +294,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             cpi = subprocess.run(
                 "yaml2script extract .gitlab-ci.yml pre-commit",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
             filename = os.path.join(
@@ -323,7 +323,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             subprocess.run(
                 "yaml2script check .gitlab-ci.yml pre-commit",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
@@ -345,7 +345,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             subprocess.run(
                 "yaml2script all .gitlab-ci.yml",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
@@ -362,7 +362,7 @@ class TestScriptsExecutable(unittest.TestCase):
         with tempfile.TemporaryDirectory() as repodir:
             subprocess.run(
                 "git clone --bare . " + repodir,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True,
                 cwd=os.path.realpath(os.path.join(
                     os.path.dirname(__file__),
@@ -371,13 +371,13 @@ class TestScriptsExecutable(unittest.TestCase):
                 check=True)
             subprocess.run(
                 "git tag -f latest",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=repodir, timeout=self.subprocess_timeout,
                 check=False)
             with tempfile.TemporaryDirectory() as tmpdir:
                 subprocess.run(
                     "git init " + tmpdir,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
                 shutil.copyfile(
@@ -396,12 +396,12 @@ class TestScriptsExecutable(unittest.TestCase):
                     fide.write(data)
                 subprocess.run(
                     "git add .",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
                 subprocess.run(
                     "pre-commit run --all-files",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=10*self.subprocess_timeout,
                     check=True)
 
@@ -424,7 +424,7 @@ class TestScriptsExecutable(unittest.TestCase):
             cpi = subprocess.run(
                 "yaml2script extract -shebang='#!/usr/bin/env python' "
                 ".gitlab-ci.yml my_python-job",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
             filename = os.path.join(
@@ -455,7 +455,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 "yaml2script check -shebang='#!/usr/bin/env python' "
                 "-check_command=pycodestyle -parameter_check_command='' "
                 ".gitlab-ci.yml my_python-job",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
@@ -479,7 +479,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 "yaml2script all -shebang='#!/usr/bin/env python' "
                 "-check_command=pycodestyle -parameter_check_command='' "
                 ".gitlab-ci.yml",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
@@ -496,7 +496,7 @@ class TestScriptsExecutable(unittest.TestCase):
         with tempfile.TemporaryDirectory() as repodir:
             subprocess.run(
                 "git clone --bare . " + repodir,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True,
                 cwd=os.path.realpath(os.path.join(
                     os.path.dirname(__file__),
@@ -505,13 +505,13 @@ class TestScriptsExecutable(unittest.TestCase):
                 check=True)
             subprocess.run(
                 "git tag -f latest",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=repodir, timeout=self.subprocess_timeout,
                 check=False)
             with tempfile.TemporaryDirectory() as tmpdir:
                 subprocess.run(
                     "git init " + tmpdir,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
                 shutil.copyfile(
@@ -530,12 +530,12 @@ class TestScriptsExecutable(unittest.TestCase):
                     fide.write(data)
                 subprocess.run(
                     "git add .",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
                 subprocess.run(
                     "pre-commit run --all-files",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=10*self.subprocess_timeout,
                     check=True)
 
@@ -557,7 +557,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             cpi = subprocess.run(
                 "yaml2script extract .gitlab-ci.yml ruff",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
             filename = os.path.join(
@@ -586,7 +586,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             cpi = subprocess.run(
                 "yaml2script check .gitlab-ci.yml ruff",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=False)
             with self.assertRaises(subprocess.CalledProcessError):
@@ -611,7 +611,7 @@ class TestScriptsExecutable(unittest.TestCase):
             subprocess.run(
                 "yaml2script check -verbose .gitlab-ci.yml ruff "
                 "-parameter_check_command '-e SC2028'",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
@@ -633,7 +633,7 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             cpi = subprocess.run(
                 "yaml2script all .gitlab-ci.yml",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=False)
             with self.assertRaises(subprocess.CalledProcessError):
@@ -658,7 +658,7 @@ class TestScriptsExecutable(unittest.TestCase):
             subprocess.run(
                 "yaml2script all -verbose .gitlab-ci.yml "
                 "-parameter_check_command '-e SC2028'",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
@@ -675,7 +675,7 @@ class TestScriptsExecutable(unittest.TestCase):
         with tempfile.TemporaryDirectory() as repodir:
             subprocess.run(
                 "git clone --bare . " + repodir,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True,
                 cwd=os.path.realpath(os.path.join(
                     os.path.dirname(__file__),
@@ -684,13 +684,13 @@ class TestScriptsExecutable(unittest.TestCase):
                 check=True)
             subprocess.run(
                 "git tag -f latest",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=repodir, timeout=self.subprocess_timeout,
                 check=False)
             with tempfile.TemporaryDirectory() as tmpdir:
                 subprocess.run(
                     "git init " + tmpdir,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
                 shutil.copyfile(
@@ -709,12 +709,12 @@ class TestScriptsExecutable(unittest.TestCase):
                     fide.write(data)
                 subprocess.run(
                     "git add .",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
                 cpi = subprocess.run(
                     "pre-commit run --all-files",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=10*self.subprocess_timeout,
                     check=False)
                 with self.assertRaises(subprocess.CalledProcessError):
@@ -740,7 +740,7 @@ class TestScriptsExecutable(unittest.TestCase):
                     os.path.join(tmpdir, '.gitlab-ci.yml'))
                 subprocess.run(
                     "yaml2script all .gitlab-ci.yml",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                     check=True)
 
@@ -761,7 +761,7 @@ class TestScriptsExecutable(unittest.TestCase):
             with tempfile.TemporaryDirectory() as repodir:
                 subprocess.run(
                     "git clone --bare . " + repodir,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True,
                     cwd=os.path.realpath(os.path.join(
                         os.path.dirname(__file__),
@@ -770,13 +770,13 @@ class TestScriptsExecutable(unittest.TestCase):
                     check=True)
                 subprocess.run(
                     "git tag -f latest",
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    capture_output=True,
                     shell=True, cwd=repodir, timeout=self.subprocess_timeout,
                     check=False)
                 with tempfile.TemporaryDirectory() as tmpdir:
                     subprocess.run(
                         "git init " + tmpdir,
-                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        capture_output=True,
                         shell=True, cwd=tmpdir,
                         timeout=self.subprocess_timeout,
                         check=True)
@@ -796,13 +796,13 @@ class TestScriptsExecutable(unittest.TestCase):
                         fide.write(data)
                     subprocess.run(
                         "git add .",
-                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        capture_output=True,
                         shell=True, cwd=tmpdir,
                         timeout=self.subprocess_timeout,
                         check=True)
                     subprocess.run(
                         "pre-commit run --all-files",
-                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        capture_output=True,
                         shell=True, cwd=tmpdir,
                         timeout=10*self.subprocess_timeout,
                         check=True)
@@ -828,21 +828,20 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             subprocess.run(
                 "yaml2script all .gitlab-ci.yml",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=True)
 
     def test_yaml2script_extract_06(self):
         """
-        yaml2script all 06
+        yaml2script extract 06
 
         test if yaml2script raises a clear error for invalid jobnames
 
         :Author: Daniel Mohr
         :Date: 2026-06-09
 
-        env python3 main.py \
-          TestScriptsExecutable.test_yaml2script_extract_06
+        env python3 main.py TestScriptsExecutable.test_yaml2script_extract_06
         """
         with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copyfile(
@@ -852,11 +851,92 @@ class TestScriptsExecutable(unittest.TestCase):
                 os.path.join(tmpdir, '.gitlab-ci.yml'))
             cpi = subprocess.run(
                 "yaml2script extract .gitlab-ci.yml invalid_job",
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
                 check=False)
             self.assertEqual(cpi.returncode, 1)
             self.assertIn("job 'invalid_job' not found", cpi.stderr.decode())
+
+    def test_yaml2script_extract_07(self):
+        """
+        yaml2script extract 07
+
+        test extraction of a job whose script contains multi-line
+        literal block scalars ('|') and a quoted string with '=$'.
+
+        :Author: Daniel Mohr
+        :Date: 2026-09-28
+
+        env python3 main.py TestScriptsExecutable.test_yaml2script_extract_07
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/07_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            cpi = subprocess.run(
+                "yaml2script extract .gitlab-ci.yml "
+                "job_with_multiline_script",
+                capture_output=True,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=True)
+            filename = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                'data/07_extract_job_with_multiline_script')
+            with open(filename, encoding='utf8') as fide:
+                data = fide.read()
+            self.assertEqual(cpi.stdout.decode(), data)
+
+    def test_yaml2script_check_07(self):
+        """
+        yaml2script check 07
+
+        test that the extracted script (multi-line block scalars and
+        a quoted string with '=$') passes shellcheck without errors.
+
+        :Author: Daniel Mohr
+        :Date: 2026-09-28
+
+        env python3 main.py TestScriptsExecutable.test_yaml2script_check_07
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/07_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            subprocess.run(
+                "yaml2script check .gitlab-ci.yml "
+                "job_with_multiline_script",
+                capture_output=True,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=True)
+
+    def test_yaml2script_all_07(self):
+        """
+        yaml2script all 07
+
+        test that 'all' correctly handles a file whose only job uses
+        multi-line block scalars and a quoted string with '=$'.
+        shellcheck must be satisfied (no -e ignores needed).
+
+        :Author: Daniel Mohr
+        :Date: 2026-09-28
+
+        env python3 main.py TestScriptsExecutable.test_yaml2script_all_07
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copyfile(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'data/07_gitlab-ci.yaml'),
+                os.path.join(tmpdir, '.gitlab-ci.yml'))
+            subprocess.run(
+                "yaml2script all .gitlab-ci.yml",
+                capture_output=True,
+                shell=True, cwd=tmpdir, timeout=self.subprocess_timeout,
+                check=True)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,27 @@
+# Test file 07: multiline script entries (literal block scalar '|')
+# and quoted strings containing shell special characters.
+#
+# This file covers three script entry forms that were not covered
+# by the other test files:
+#
+#   1. A multi-line literal block scalar ('|') with a 'trap' statement.
+#   2. A single-line literal block scalar ('|').
+#   3. A double-quoted string containing a colon followed by '='
+#      (i.e. '=$'). Unquoted, YAML would parse this as a mapping
+#      (dict) and yaml2script would crash with a TypeError. Quoted,
+#      it is correctly kept as a string.
+#
+# Expected extraction: see 07_extract_job_with_multiline_script
+
+job_with_multiline_script:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+  image:
+    name: alpine:latest
+  script:
+    - |
+      TEMP_DIR=$(mktemp -d)
+      trap 'rm -rf "$TEMP_DIR"' EXIT
+    - |
+      echo "TEMP_DIR: ${TEMP_DIR}"
+    - "echo \"TEMP_DIR=$: ${TEMP_DIR}\""

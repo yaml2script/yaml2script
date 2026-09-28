@@ -1,6 +1,6 @@
 ---
 author: Daniel Mohr
-date: 2026-06-09
+date: 2026-09-28
 license: GPL-3.0-or-later
 home: https://gitlab.com/yaml2script/yaml2script
 mirror: https://github.com/yaml2script/yaml2script
@@ -22,12 +22,6 @@ and [GitLab CI's 'extends'](https://docs.gitlab.com/ci/yaml/#extends)
 functionality,
 allowing for seamless extraction of scripts from complex '.gitlab-ci.yml'
 files.
-
-Note: The support for the
-[`!reference` custom YAML tag](https://docs.gitlab.com/ci/yaml/yaml_optimization/#reference-tags)
-is limited.
-Specifically, references that span across files are not resolved.
-In such cases, it is recommended to manually analyze each file individually.
 
 see: [yaml2script’s documentation](https://yaml2script.gitlab.io/yaml2script/)
 
@@ -51,13 +45,22 @@ see: [yaml2script’s documentation](https://yaml2script.gitlab.io/yaml2script/)
   automate testing and analysis, for example via
   [pre-commit](https://pre-commit.com/).
 
-## installation
+## Known Limitations
+
+* **`extends`**: Only single-level, string-form `extends` is supported
+  (e.g. `extends: .template`). List-form (`extends: [.a, .b]`) and
+  chained extends are **not** resolved.
+* **`!reference`**: References ([`!reference` custom YAML tag](https://docs.gitlab.com/ci/yaml/yaml_optimization/#reference-tags))
+  that span across files (via `include`) are not resolved.
+  Analyze each file individually in such cases.
+
+## Installation
 
 `yaml2script` requires Python 3 and the package [pyyaml](https://pyyaml.org/).
 You can install it by your operating system's package management system.
 Or you can have it installed automatically as a dependency of pip.
 
-You can install `yaml2script` by running the following command:
+You can install `yaml2script` by running the following command (recommended):
 
 ```sh
 pipx install git+https://gitlab.com/yaml2script/yaml2script.git
@@ -74,8 +77,8 @@ You can also install some or all of these as optional dependency(ies):
 pip3 install ".[shellcheck, pycodestyle, pylint]"
 ```
 
-As far as I know you can not install these optional dependencies with `pipx`.
-But you can inject them manually, e. g.:
+As far as I know you can not install these optional dependencies with `pipx`
+directly. But you can inject them manually, e. g.:
 
 ```sh
 pipx install git+https://gitlab.com/yaml2script/yaml2script.git
@@ -97,7 +100,7 @@ Or:
 ```sh
 apk add --no-cache py3-pip py3-yaml py3-pycodestyle
 pip3 install --no-deps \
-  https://gitlab.com/yaml2script/yaml2script/-/archive/0.1.4/yaml2script-0.1.4.zip
+  https://gitlab.com/yaml2script/yaml2script/-/archive/0.2.4/yaml2script-0.2.4.zip
 ```
 
 You can also use other Linux derivatives, e. g. for
@@ -123,6 +126,14 @@ pipx install --system-site-packages \
 
 Please see the help output or
 [yaml2script’s documentation: command line script](https://yaml2script.gitlab.io/yaml2script/script_yaml2script.html).
+
+### How it works to check `.gitlab-ci.yml` pipeline
+
+`yaml2script` reads the `.gitlab-ci.yml` file, resolves GitLab CI's
+`extends` (single-level, string-form) and `!reference` tags (same-file only),
+flattens nested script lists (including YAML anchors), and prepends a shebang
+(default: `#!/usr/bin/env sh`). The resulting script is written to a
+temporary file and passed to the check command (default: `shellcheck`).
 
 ### Examples
 
@@ -152,7 +163,7 @@ Check all jobs/scripts from a `.gitlab-ci.yml` file using `shellcheck`:
 yaml2script all .gitlab-ci.yml
 ```
 
-You can ignore a specific error by adding parameters for the check coommand,
+You can ignore a specific error by adding parameters for the check command,
 e. g.:
 
 ```sh
@@ -166,7 +177,7 @@ job/script `my_python-job` and check it with
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/):
 
 ```sh
-yaml2script check -shebang "#/usr/bin/env python" \
+yaml2script check -shebang "#!/usr/bin/env python" \
   -check_command pycodestyle \
   .gitlab-ci.yml my_python-job
 ```
@@ -195,6 +206,7 @@ To ensure a repeatable experience, as described in
 please replace `rev: latest` with the version you intend to use.
 The value latest is only a placeholder in this README and
 can not be used directly (not existing).
+
 
 With this configuration, for example, the following YAML file would be tested
 for errors.
@@ -294,7 +306,7 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2026-06-09
+Date: 2026-09-28
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 
