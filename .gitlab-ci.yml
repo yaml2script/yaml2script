@@ -294,7 +294,7 @@ ubuntu-latest-conda-miniforge:
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
     - export PATH="/root/miniforge3/bin:$PATH"
-    - ~/miniforge3/bin/activate base
+    - . ~/miniforge3/bin/activate base
     # install yaml2script
     - pip3 install --root-user-action=ignore .
     # very simple test
