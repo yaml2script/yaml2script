@@ -64,6 +64,8 @@ pycodestyle:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: alpine:latest
@@ -77,6 +79,8 @@ alpine-latest-pipx:
   stage: build_test
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
   image:
@@ -97,6 +101,8 @@ alpine-latest-pip:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: alpine:latest
@@ -113,6 +119,8 @@ alpine-latest-pip-system-packages:
   stage: build_test
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
   image:
@@ -131,6 +139,8 @@ debian-latest-pipx:
   stage: build_test
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
   image:
@@ -154,6 +164,8 @@ debian-latest-pip:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: debian:latest
@@ -171,6 +183,8 @@ debian-latest-pip-system-packages:
   stage: build_test
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
   image:
@@ -209,6 +223,8 @@ debian-latest-conda-miniforge:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: debian:latest
@@ -237,6 +253,8 @@ almalinux-latest-pipx:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: almalinux:latest
@@ -260,6 +278,8 @@ ubuntu-latest-pipx:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: ubuntu:latest
@@ -281,6 +301,8 @@ ubuntu-latest-conda-miniforge:
   stage: build_test
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: on_success
   image:
@@ -312,6 +334,8 @@ ubuntu-latest-conda-miniforge-simple:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - when: on_success
   image:
     name: ubuntu:latest
@@ -336,6 +360,8 @@ release_job:
   stage: create_release
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
   image:
@@ -365,6 +391,8 @@ trigger_check_release:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
   variables:
     TAG: $TAG
@@ -382,6 +410,8 @@ pages:
     name: alpine:latest
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   extends: .display_env
@@ -402,6 +432,8 @@ trigger_deploy2zenodo:
   stage: deploy
   rules:
     - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
   variables:
