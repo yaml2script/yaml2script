@@ -224,6 +224,7 @@ debian-latest-conda-miniforge:
     - . ~/.bashrc
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck]"
+    - which yaml2script
     # very simple test
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
@@ -293,10 +294,10 @@ ubuntu-latest-conda-miniforge:
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
-    - export PATH="/root/miniforge3/bin:$PATH"
-    - . ~/miniforge3/bin/activate base
+    - . ~/.bashrc
     # install yaml2script
     - pip3 install --root-user-action=ignore .
+    - which yaml2script
     # very simple test
     - yaml2script --help
     - if yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml; then exit 1; fi
@@ -323,10 +324,10 @@ ubuntu-latest-conda-miniforge-simple:
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
-    - export PATH="/root/miniforge3/bin:$PATH"
-    - ~/miniforge3/bin/activate base
+    - . ~/.bashrc
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
+    - which yaml2script
     # very simple test
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
