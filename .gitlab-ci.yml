@@ -66,7 +66,9 @@ pycodestyle:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -82,7 +84,9 @@ alpine-latest-pipx:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -103,7 +107,9 @@ alpine-latest-pip:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -122,7 +128,9 @@ alpine-latest-pip-system-packages:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -142,7 +150,9 @@ debian-latest-pipx:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -166,7 +176,9 @@ debian-latest-pip:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -186,7 +198,9 @@ debian-latest-pip-system-packages:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -225,7 +239,9 @@ debian-latest-conda-miniforge:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -255,7 +271,9 @@ almalinux-latest-pipx:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: almalinux:latest
   extends: .display_env
@@ -280,7 +298,9 @@ ubuntu-latest-pipx:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: ubuntu:latest
   extends: .display_env
@@ -304,7 +324,9 @@ ubuntu-latest-conda-miniforge:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: ubuntu:latest
   extends: .display_env
@@ -317,6 +339,7 @@ ubuntu-latest-conda-miniforge:
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
     - . ~/.bashrc
+    - export PATH="/root/miniforge3/bin:$PATH"
     # install yaml2script
     - pip3 install --root-user-action=ignore .
     - which yaml2script
@@ -336,7 +359,9 @@ ubuntu-latest-conda-miniforge-simple:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: ubuntu:latest
   extends: .display_env
@@ -349,6 +374,7 @@ ubuntu-latest-conda-miniforge-simple:
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
     - . ~/.bashrc
+    - export PATH="/root/miniforge3/bin:$PATH"
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
     - which yaml2script
@@ -364,6 +390,8 @@ release_job:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
+      when: always
+    - when: never
   image:
     # https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html#create-release-metadata-in-a-custom-script
     registry.gitlab.com/gitlab-org/release-cli:latest
@@ -394,6 +422,8 @@ trigger_check_release:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
+      when: always
+    - when: never
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA
@@ -414,6 +444,8 @@ pages:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
   extends: .display_env
   script:
     - apk add --no-cache pipx
@@ -436,6 +468,8 @@ trigger_deploy2zenodo:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
+      when: always
+    - when: never
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA
