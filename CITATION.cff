@@ -16,7 +16,7 @@ identifiers:
 repository-code: https://gitlab.com/projects/67499090
 url: https://gitlab.com/yaml2script/yaml2script
 abstract: |-
-  yaml2script is a Python script that extracts shell scripts from a GitLab CI/CD configuration file .gitlab-ci.yml and allows you to test/analyze them with tools like shellcheck.
+  yaml2script is a Python tool that extracts shell scripts from a GitLab CI/CD configuration file (.gitlab-ci.yml) and enables their testing, analysis, and validation with any command-line tool of your choice. It correctly handles YAML anchors, `extends`, and complex script structures, making it ideal for ensuring the quality, security, and correctness of CI/CD pipelines. The tool is particularly useful for automating code quality checks, security audits, and workflow validation in DevOps environments.
 keywords:
   - yaml
   - script
