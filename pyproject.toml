@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "yaml2script"
 version = "0.2.4"
 authors = [{name="Daniel Mohr", email="daniel.mohr@uni-greifswald.de"}]
-description = "`yaml2script` extracts the scripts from a '.gitlab-ci.yml' file."
+description = "Extract and test shell scripts from your GitLab CI/CD configuration (.gitlab-ci.yml) with any tool."
 keywords=["yaml2script"]
 readme = "README.md"
 requires-python = ">=3.9"
