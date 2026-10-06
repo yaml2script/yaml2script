@@ -246,7 +246,7 @@ def _run_check_script(
                 print('run', cmd)
             cpi = subprocess.run(  # nosec B603
                 cmd,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                capture_output=True,
                 cwd=tmpdir, check=False)
             returncode += cpi.returncode
             if not quiet:
@@ -327,8 +327,8 @@ def _my_argument_parser():
     parser_version = subparsers.add_parser(
         'version',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        help='return version of detloclcheck',
-        description='display version information of detloclcheck',
+        help='return version of yaml2script',
+        description='display version information of yaml2script',
         epilog=epilog)
     parser_version.set_defaults(func=run_version)
     parser_version.add_argument(

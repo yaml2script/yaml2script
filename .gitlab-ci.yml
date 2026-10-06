@@ -44,8 +44,6 @@ pre-commit:
   script:
     - apk add --no-cache git npm pre-commit
     - pre-commit --version
-    # ignore file, it's a deliberate error test case
-    - rm tests/data/03_extract_ruff
     - pre-commit run --all-files --show-diff-on-failure
     - |
       VERSION=$(awk -F'"' '/^\s*version\s*=\s*"/ {print $2; exit}' pyproject.toml)
@@ -53,7 +51,7 @@ pre-commit:
     - |
       if [ -n "$CI_MERGE_REQUEST_IID" ]; then
         echo "check version vs. available tags for merge request ..."
-        if git ls-remote --tags "https://gitlab.com/${CI_PROJECT_PATH}.git" | grep -q "refs/tags/v${VERSION}"; then
+        if git ls-remote --tags "https://gitlab.com/${CI_PROJECT_PATH}.git" | grep -q "refs/tags/${VERSION}$"; then
           echo "version $VERSION exists as tag, cannot accept merge request"
           exit 1
         fi
@@ -66,7 +64,11 @@ pycodestyle:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -80,7 +82,11 @@ alpine-latest-pipx:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -99,7 +105,11 @@ alpine-latest-pip:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -116,7 +126,11 @@ alpine-latest-pip-system-packages:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: alpine:latest
   extends: .display_env
@@ -134,7 +148,11 @@ debian-latest-pipx:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -156,7 +174,11 @@ debian-latest-pip:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -174,7 +196,11 @@ debian-latest-pip-system-packages:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -211,7 +237,11 @@ debian-latest-conda-miniforge:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: debian:latest
   extends: .display_env
@@ -226,6 +256,7 @@ debian-latest-conda-miniforge:
     - . ~/.bashrc
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck]"
+    - which yaml2script
     # very simple test
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
@@ -238,7 +269,11 @@ almalinux-latest-pipx:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: almalinux:latest
   extends: .display_env
@@ -261,7 +296,11 @@ ubuntu-latest-pipx:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: ubuntu:latest
   extends: .display_env
@@ -283,7 +322,11 @@ ubuntu-latest-conda-miniforge:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: ubuntu:latest
   extends: .display_env
@@ -295,10 +338,11 @@ ubuntu-latest-conda-miniforge:
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
+    - . ~/.bashrc
     - export PATH="/root/miniforge3/bin:$PATH"
-    - ~/miniforge3/bin/activate base
     # install yaml2script
     - pip3 install --root-user-action=ignore .
+    - which yaml2script
     # very simple test
     - yaml2script --help
     - if yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml; then exit 1; fi
@@ -313,7 +357,11 @@ ubuntu-latest-conda-miniforge-simple:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - when: on_success
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   image:
     name: ubuntu:latest
   extends: .display_env
@@ -325,10 +373,11 @@ ubuntu-latest-conda-miniforge-simple:
     - bash "Miniforge3-$(uname)-$(uname -m).sh" -b
     - cat ~/miniforge3/.condarc
     - ~/miniforge3/bin/conda init
+    - . ~/.bashrc
     - export PATH="/root/miniforge3/bin:$PATH"
-    - ~/miniforge3/bin/activate base
     # install yaml2script
     - pip3 install --root-user-action=ignore ".[shellcheck, pycodestyle, pylint]"
+    - which yaml2script
     # very simple test
     - yaml2script --help
     - yaml2script all -parameter_check_command="-e SC1090" .gitlab-ci.yml
@@ -338,7 +387,11 @@ release_job:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
+      when: always
+    - when: never
   image:
     # https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html#create-release-metadata-in-a-custom-script
     registry.gitlab.com/gitlab-org/release-cli:latest
@@ -366,7 +419,11 @@ trigger_check_release:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
+      when: always
+    - when: never
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA
@@ -384,7 +441,11 @@ pages:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
   extends: .display_env
   script:
     - apk add --no-cache pipx
@@ -404,7 +465,11 @@ trigger_deploy2zenodo:
   rules:
     - if: $CI_COMMIT_TAG
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "yaml2script"
+      when: always
+    - when: never
   variables:
     TAG: $TAG
     TAG_COMMIT_SHA: $CI_COMMIT_SHA

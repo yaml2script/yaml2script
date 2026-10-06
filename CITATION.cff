@@ -7,8 +7,8 @@ authors:
     family-names: Mohr
     orcid: https://orcid.org/0000-0002-9382-6586
     affiliation:
-      - Institute of Physics, University of Greifswald, Greifswald, Germany
-      - Institute of Atmospheric Physics, DLR German Aerospace Center, Oberpfaffenhofen, Germany
+      - University of Greifswald
+      - Deutsches Zentrum für Luft- und Raumfahrt e. V. (DLR)
 identifiers:
   - description: The concept DOI of the work.
     type: doi
