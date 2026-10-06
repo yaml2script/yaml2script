@@ -1,0 +1,26 @@
+{
+    "metadata": {
+	"related_identifiers": [
+	    {
+		"identifier": "10.5281/zenodo.14247330",
+		"scheme": "doi",
+		"relation_type": {
+		    "id": "references"
+		},
+		"resource_type": {
+		    "id": "software"
+		}
+	    },
+	    {
+		"identifier": "10.5281/zenodo.14962489",
+		"scheme": "doi",
+		"relation_type": {
+		    "id": "ispartof"
+		},
+		"resource_type": {
+		    "id": "software"
+		}
+	    }
+	]
+    }
+}

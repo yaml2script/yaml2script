@@ -30,6 +30,10 @@ see: [yaml2script’s documentation](https://yaml2script.gitlab.io/yaml2script/)
 * **Automated testing**:
   With yaml2script, you can automatically test your CI/CD scripts and
   ensure they are working as expected and correctly.
+* **Universal testing**:
+  yaml2script is not limited to specific tools. You can test your CI/CD scripts
+  with any command-line tool you prefer -- whether it's shellcheck,
+  pycodestyle, pylint, ruff, bandit, or even custom scripts.
 * **Security audits**:
   By using tools like shellcheck, yaml2script can help identify and
   fix security vulnerabilities in your scripts.
@@ -70,7 +74,7 @@ Furthermore, you will probably need a tool for checking your code such as
 [shellcheck](https://www.shellcheck.net/),
 [pycodestyle](https://pycodestyle.pycqa.org/en/latest/),
 [pylint](https://github.com/pylint-dev/pylint)
-or others.
+or any others.
 You can also install some or all of these as optional dependency(ies):
 
 ```sh
@@ -305,7 +309,7 @@ shellcheck_.gitlab-ci.yml:
 
 Author: Daniel Mohr.
 
-Date: 2026-09-28
+Date: 2026-10-06
 
 License: GNU General Public License Version 3 or any later version(GPLv3+)
 

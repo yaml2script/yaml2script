@@ -2,10 +2,10 @@
   "metadata": {
     "communities": [
       {
-        "identifier": "dlr_de"
+        "id": "helmholtz_hmc"
       },
       {
-        "identifier": "helmholtz_hmc"
+        "id": "dlr_de"
       }
     ]
   }
