@@ -25,5 +25,5 @@ keywords:
   - pre-commit
   - pre-commit-hook
   - developer-tools
-license: GPL-3.0-or-later
+license: gpl-3.0-or-later
 doi: 10.5281/zenodo.14962489
